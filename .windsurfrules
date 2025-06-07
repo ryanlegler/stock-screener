@@ -1,0 +1,10 @@
+Your package manager (pnpm)
+TypeScript as the programming language
+Next.js version with specific version number
+Tailwind CSS version
+Code quality tools (Prettier and ESLint)
+Turbopack for development builds
+React version
+Project structure conventions (components and app directories)
+use server component for data fetching
+
