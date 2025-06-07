@@ -316,7 +316,7 @@ export interface GetChartResponse {
 }
 
 export interface ChartDataPoint {
-    date?: number;
+    date: Date;
     open?: number;
     high?: number;
     low?: number;

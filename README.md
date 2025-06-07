@@ -5,6 +5,7 @@ A Next.js application that displays real-time financial news for selected stock 
 ## Features
 
 - Real-time financial news feed for multiple stock symbols
+- Historical price data with customizable intervals and ranges
 - Clean, responsive UI using shadcn/ui components
 - Server-side API route with rate limiting and caching
 - TypeScript support for type safety
@@ -99,6 +100,11 @@ Reports are automatically generated when:
 │   │   └── reports/
 │   │       └── generate/
 │   │           └── route.ts   # Report generation API
+│   ├── lib/
+│   │   └── api/
+│   │       ├── client.ts      # API client configuration
+│   │       ├── screener.ts    # Stock screener functionality
+│   │       └── get-historic-data.ts # Historical price data fetching
 │   ├── components/
 │   │   ├── news-card.tsx     # News item card component
 │   │   ├── news-feed.tsx     # News feed container

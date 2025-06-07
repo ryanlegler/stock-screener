@@ -10,11 +10,10 @@ import {
     ChartResponse,
 } from '@/app/types/api';
 
-const BASE_URL = process.env.RAPIDAPI_HOST!;
-
-const headers = {
+const getHeaders = () => ({
     'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
-};
+    'x-rapidapi-host': process.env.RAPIDAPI_HOST!,
+});
 
 export class APIClient {
     /**
@@ -40,9 +39,10 @@ export class APIClient {
                 range: range, // valid values: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max
                 region: region, // valid values: AR, AU, BR, CA, CN, FR, DE, HK, IN, IT, MX, NZ, SG, KR, ES, TW, GB, US
             });
+            console.log('🚀 ~ APIClient ~ queryParams:', queryParams);
 
             const requestHeaders = {
-                ...headers,
+                ...getHeaders(),
                 host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
@@ -50,7 +50,14 @@ export class APIClient {
             };
 
             // Using the correct endpoint path from the documentation
-            const fullUrl = `${BASE_URL}/api/stock/get-chart?${queryParams.toString()}`;
+            const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
+            const fullUrl = `${baseUrl}/api/stock/get-chart?${queryParams.toString()}`;
+            
+            console.log('API Request:', {
+                url: fullUrl,
+                headers: requestHeaders,
+                params: Object.fromEntries(queryParams.entries())
+            });
 
             console.log(
                 `Fetching historical data for ${symbol} with interval=${interval}, range=${range}`
@@ -181,14 +188,15 @@ export class APIClient {
             });
 
             const requestHeaders = {
-                ...headers,
+                ...getHeaders(),
                 host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
                 'accept-encoding': 'gzip, deflate, br, zstd',
             };
 
-            const fullUrl = `${BASE_URL}/api/market/get-quote-v2?${queryParams.toString()}`;
+            const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
+            const fullUrl = `${baseUrl}/api/market/get-quote-v2?${queryParams.toString()}`;
 
             const response = await fetch(fullUrl, {
                 headers: requestHeaders,
@@ -231,14 +239,15 @@ export class APIClient {
 
             // Using the exact API endpoint and headers as provided
             const requestHeaders = {
-                ...headers,
+                ...getHeaders(),
                 host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
                 'accept-encoding': 'gzip, deflate, br, zstd',
             };
 
-            const fullUrl = `${BASE_URL}/api/market/get-highest-implied-volatility?${queryParams.toString()}`;
+            const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
+            const fullUrl = `${baseUrl}/api/market/get-highest-implied-volatility?${queryParams.toString()}`;
 
             const response = await fetch(fullUrl, {
                 headers: requestHeaders,

@@ -3,19 +3,15 @@ import React from 'react';
 import {
     ChartCanvas,
     Chart,
-    CandlestickSeries,
-    XAxis,
-    YAxis,
     discontinuousTimeScaleProvider,
     MACDSeries,
-    MACDTooltip,
     macd,
 } from 'react-financial-charts';
 import { ChartDataPoint } from '../types/api';
 
-export function ChartComponent({
+export function MACDIndicator({
     data,
-    height,
+    height: heightInit,
     width,
 }: {
     data: ChartDataPoint[];
@@ -48,13 +44,12 @@ export function ChartComponent({
         .accessor((d: StockData) => d.macd);
 
     const calculatedData = macdCalculator(chartData);
-
+    const height = heightInit || 150;
     return (
         <ChartCanvas
-            height={height || 600}
-            width={width || 800}
-            ratio={3}
-            margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+            height={height}
+            width={width || 400}
+            ratio={3} // what does this do?
             seriesName="Data"
             data={calculatedData}
             xScale={xScale}
@@ -62,34 +57,24 @@ export function ChartComponent({
             displayXAccessor={displayXAccessor}
             xExtents={xExtents}
         >
-            <Chart id={1} height={400} yExtents={d => [d.high, d.low]}>
-                <XAxis />
-                <YAxis />
-                <CandlestickSeries />
-            </Chart>
-            <Chart id={2} height={150} yExtents={d => d.macd} origin={(w, h) => [0, h - 150]}>
-                <XAxis />
-                <YAxis />
-                <MACDSeries yAccessor={d => d.macd} />
-                <MACDTooltip
-                    origin={[-38, 15]}
+            <Chart
+                id={2}
+                height={height || 150}
+                yExtents={d => d.macd}
+                origin={(w, h) => [0, h - height]}
+            >
+                <MACDSeries
+                    clip={true}
+                    fillStyle={{
+                        divergence: '#26a69a',
+                    }}
+                    strokeStyle={{
+                        macd: 'magenta',
+                        signal: 'green',
+                        zero: 'black',
+                    }}
+                    widthRatio={0.8} // thisckness of the bar
                     yAccessor={d => d.macd}
-                    options={{
-                        fast: 12,
-                        slow: 26,
-                        signal: 9,
-                    }}
-                    appearance={{
-                        strokeStyle: {
-                            macd: '#000000',
-                            signal: '#000000',
-                        },
-                        fillStyle: {
-                            divergence: '#000000',
-                        },
-                    }}
-                    labelFill="#000000"
-                    fontSize={12}
                 />
             </Chart>
         </ChartCanvas>
