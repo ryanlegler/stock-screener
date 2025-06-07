@@ -19,20 +19,22 @@ The application uses a report-driven architecture to efficiently manage stock da
 ### How it Works
 
 1. **Report Generation**
-   - Stock data is fetched and saved as JSON reports
-   - Reports are stored in the `reports` directory
-   - Each report is timestamped and archived
+
+    - Stock data is fetched and saved as JSON reports
+    - Reports are stored in the `reports` directory
+    - Each report is timestamped and archived
 
 2. **Data Loading**
-   - App loads the latest report on startup
-   - Automatically detects and refreshes stale reports
-   - Manual report generation available via UI button
+
+    - App loads the latest report on startup
+    - Automatically detects and refreshes stale reports
+    - Manual report generation available via UI button
 
 3. **Benefits**
-   - Reduces API calls and rate limiting issues
-   - Improves application performance
-   - Maintains historical data
-   - Simplifies development and testing
+    - Reduces API calls and rate limiting issues
+    - Improves application performance
+    - Maintains historical data
+    - Simplifies development and testing
 
 ### Report System
 
@@ -43,6 +45,7 @@ The application uses a report-driven architecture to efficiently manage stock da
 ```
 
 Reports are automatically generated when:
+
 - No existing report is found
 - The current report is from a previous day
 - User manually triggers a refresh

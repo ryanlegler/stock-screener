@@ -62,10 +62,10 @@ export function StockScreener() {
         return (
             <div>
                 <div className="text-red-500">{error}</div>
-                <button 
+                <button
                     onClick={generateReport}
                     disabled={generating}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:bg-gray-400"
                 >
                     {generating ? 'Generating...' : 'Retry'}
                 </button>
@@ -75,11 +75,11 @@ export function StockScreener() {
 
     return (
         <div>
-            <div className="mb-4 flex justify-between items-center">
-                <button 
+            <div className="mb-4 flex items-center justify-between">
+                <button
                     onClick={generateReport}
                     disabled={generating}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:bg-gray-400"
                 >
                     {generating ? 'Generating...' : 'Generate New Report'}
                 </button>

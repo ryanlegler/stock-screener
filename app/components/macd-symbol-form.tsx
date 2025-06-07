@@ -19,7 +19,7 @@ export default function MACDSymbolForm({
     initialSymbols,
     initialInterval = '30m',
     initialRange = '1mo',
-    initialBullishOnly = false
+    initialBullishOnly = false,
 }: MACDSymbolFormProps) {
     const router = useRouter();
     const [symbols, setSymbols] = useState<string[]>(initialSymbols);
@@ -157,14 +157,14 @@ export default function MACDSymbolForm({
                     </div>
                 </div>
             )}
-            
-            <div className="flex items-center my-4">
+
+            <div className="my-4 flex items-center">
                 <input
                     id="bullish-only"
                     type="checkbox"
                     checked={bullishOnly}
-                    onChange={(e) => setBullishOnly(e.target.checked)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    onChange={e => setBullishOnly(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label htmlFor="bullish-only" className="ml-2 block text-sm text-gray-900">
                     Show only stocks with bullish MACD signals

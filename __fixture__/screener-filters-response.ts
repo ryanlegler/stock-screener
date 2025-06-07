@@ -1,6 +1,4 @@
-import { ScreenerFiltersResponse } from '@/app/types';
-
-export const screenerFiltersResponse: ScreenerFiltersResponse = {
+export const screenerFiltersResponse: any = {
     finance: {
         result: [
             {

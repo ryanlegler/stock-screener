@@ -19,10 +19,7 @@ async function saveReport(data: Result) {
 
     // Also save a timestamped version
     const archiveFilename = `report-${timestamp.replace(/[:.]/g, '-')}.json`;
-    await fs.writeFile(
-        path.join(REPORTS_DIR, archiveFilename),
-        JSON.stringify(report, null, 2)
-    );
+    await fs.writeFile(path.join(REPORTS_DIR, archiveFilename), JSON.stringify(report, null, 2));
 
     return report;
 }
@@ -68,7 +65,7 @@ export async function GET() {
         if (!report) {
             return NextResponse.json({
                 exists: false,
-                report: null
+                report: null,
             });
         }
 
@@ -76,13 +73,16 @@ export async function GET() {
         return NextResponse.json({
             exists: true,
             isStale,
-            report
+            report,
         });
     } catch (error) {
         console.error('Failed to get report:', error);
-        return NextResponse.json({
-            exists: false,
-            error: 'Failed to get report'
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                exists: false,
+                error: 'Failed to get report',
+            },
+            { status: 500 }
+        );
     }
 }

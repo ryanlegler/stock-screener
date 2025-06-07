@@ -52,11 +52,6 @@ const headers = {
     'X-Rapidapi-Host': process.env.RAPIDAPI_HOST!,
 };
 
-export interface ScreenerFiltersResponse {
-    error: null | string;
-    data: unknown; // TODO: Add proper type definition based on response
-}
-
 /**
  * Fetches available filter options for the stock screener.
  *
@@ -72,9 +67,7 @@ export interface ScreenerFiltersResponse {
  * @param type - The type of filters to fetch (default: 'earnings')
  * @returns Promise<ScreenerFiltersResponse> - The available filters and their metadata
  */
-export async function getScreenerFilters(
-    type: string = 'earnings'
-): Promise<ScreenerFiltersResponse> {
+export async function getScreenerFilters(type: string = 'earnings'): Promise<any> {
     try {
         const response = await fetch(`${BASE_URL}/api/screener/get-filters?type=${type}`, {
             method: 'GET',

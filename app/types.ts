@@ -1,31 +1,3 @@
-export interface ScreenerField {
-    fieldId: string;
-    category: {
-        categoryId: string;
-        displayName: string;
-    };
-    labels: Array<{
-        displayName: string;
-        criteria: {
-            operator: string;
-            operands: Array<string | number>;
-        };
-        dependentFilterLabel: null | string;
-    }>;
-    type: 'NUMBER' | 'STRING' | 'BOOLEAN' | 'DATE';
-    deprecated: boolean;
-    displayName: string;
-    dropdownSupported: boolean;
-    sortable: boolean;
-    isPremium: boolean;
-    dependFor?: string | string[];
-    enableSearch?: boolean;
-    dependentField?: string;
-    searchSource?: string;
-}
-
-///
-
 export type ScreenerResult = ScreenerListResponse;
 
 export interface ScreenerListResponse {
@@ -54,7 +26,7 @@ export interface Quote {
     triggerable: boolean;
     customPriceAlertConfidence: string;
     lastCloseTevEbitLtm?: number;
-    lastClosePriceToNNWCPerShare: number;
+    lastClosePriceToNNWCPerShare?: number;
     currency: string;
     regularMarketChangePercent: number;
     exchange: string;
@@ -80,7 +52,7 @@ export interface Quote {
     market: string;
     messageBoardId: string;
     fullExchangeName: string;
-    longName: string;
+    longName?: string;
     financialCurrency: string;
     regularMarketOpen: number;
     averageDailyVolume3Month: number;
