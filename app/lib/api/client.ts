@@ -8,7 +8,6 @@ import {
     GetChartResponse,
     ChartDataPoint,
     ChartResponse,
-    // QuoteResponse
 } from '@/app/types/api';
 
 const BASE_URL = 'https://yahoo-finance166.p.rapidapi.com';

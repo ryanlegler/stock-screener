@@ -264,10 +264,8 @@ export interface QuoteResult {
 
 // Implied Volatility API
 export interface ImpliedVolatilityResponse {
-    finance: {
-        result: ImpliedVolatilityResult[];
-        error: null | string;
-    };
+    error: null | string;
+    result: ImpliedVolatilityResult[];
 }
 
 export interface ImpliedVolatilityResult {
@@ -328,6 +326,92 @@ export interface ChartDataPoint {
     meta?: Meta;
     timestamp?: number[];
     indicators?: Indicators;
+}
+
+// Quotes response from the API
+export interface QuotesResponse {
+    error: string | null;
+    result: Array<{
+        language: string;
+        region: string;
+        quoteType: string;
+        typeDisp: string;
+        quoteSourceName: string;
+        triggerable: boolean;
+        customPriceAlertConfidence: string;
+        currency: string;
+        esgPopulated: boolean;
+        tradeable: boolean;
+        cryptoTradeable: boolean;
+        regularMarketChangePercent: number;
+        regularMarketTime: number;
+        regularMarketPrice: number;
+        exchange: string;
+        market: string;
+        fullExchangeName: string;
+        shortName: string;
+        marketState: string;
+        sourceInterval: number;
+        exchangeDataDelayedBy: number;
+        exchangeTimezoneName: string;
+        exchangeTimezoneShortName: string;
+        gmtOffSetMilliseconds: number;
+        hasPrePostMarketData: boolean;
+        firstTradeDateMilliseconds: number;
+        priceHint: number;
+        symbol: string;
+        sharesOutstanding?: number;
+        marketCap?: number;
+        quoteSummary: {
+            summaryDetail: {
+                maxAge: number;
+                priceHint: number;
+                previousClose: number;
+                open: number;
+                dayLow: number;
+                dayHigh: number;
+                regularMarketPreviousClose: number;
+                regularMarketOpen: number;
+                regularMarketDayLow: number;
+                regularMarketDayHigh: number;
+                trailingPE?: number;
+                volume: number;
+                regularMarketVolume: number;
+                averageVolume: number;
+                averageVolume10days: number;
+                averageDailyVolume10Day: number;
+                bid: number;
+                ask: number;
+                bidSize: number;
+                askSize: number;
+                yield?: number;
+                totalAssets?: number;
+                fiftyTwoWeekLow: number;
+                fiftyTwoWeekHigh: number;
+                fiftyDayAverage: number;
+                twoHundredDayAverage: number;
+                navPrice?: number;
+                currency: string;
+                fromCurrency: string | null;
+                toCurrency: string | null;
+                lastMarket: string | null;
+                coinMarketCapLink: string | null;
+                algorithm: string | null;
+                tradeable?: boolean;
+                payoutRatio?: number;
+                beta?: number;
+                forwardPE?: number;
+                marketCap?: number;
+                priceToSalesTrailing12Months?: number;
+                dividendRate?: number;
+                exDividendDate?: number;
+                trailingAnnualDividendRate?: number;
+                dividendYield?: number;
+                fiveYearAvgDividendYield?: number;
+                trailingAnnualDividendYield?: number;
+            };
+        };
+    }>;
 }
 
 // Quotes data transformed for application use

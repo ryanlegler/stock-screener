@@ -54,8 +54,15 @@ export function calculateMACD(
         return [];
     }
 
-    // Extract closing prices
-    const closingPrices = chartData.map(data => data.close);
+    // Extract closing prices and filter out undefined values
+    const closingPrices = chartData
+        .map(data => data.close)
+        .filter((price): price is number => price !== undefined);
+
+    if (closingPrices.length < slowPeriod + signalPeriod) {
+        console.warn('Insufficient valid price data for MACD calculation');
+        return [];
+    }
 
     // Calculate fast and slow EMAs
     const fastEMA = calculateEMA(closingPrices, fastPeriod);
@@ -89,13 +96,20 @@ export function calculateMACD(
     for (let i = 0; i < histogram.length; i++) {
         const dataIdx = i + dataStartIdx;
         if (dataIdx < chartData.length) {
-            result.push({
-                date: chartData[dataIdx].date,
-                macdLine: macdLine[i + signalPeriod - 1],
-                signalLine: signalLine[i],
-                histogram: histogram[i],
-                price: chartData[dataIdx].close,
-            });
+            const dataPoint = chartData[dataIdx];
+            const date = dataPoint.date;
+            const price = dataPoint.close;
+
+            // Only include points that have both date and price
+            if (date !== undefined && price !== undefined) {
+                result.push({
+                    date,
+                    macdLine: macdLine[i + signalPeriod - 1],
+                    signalLine: signalLine[i],
+                    histogram: histogram[i],
+                    price,
+                });
+            }
         }
     }
 

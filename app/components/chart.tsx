@@ -75,7 +75,15 @@ import {
 // export { DrawingObjectSelector } from "./DrawingObjectSelector";
 // export { ZoomButtons } from "./ZoomButtons";
 
-const initialData = [
+type ChartDataPoint = {
+    date: Date;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+};
+
+const initialData: ChartDataPoint[] = [
     { date: new Date(2023, 0, 1), open: 100.0, high: 105.0, low: 98.0, close: 103.0 },
     { date: new Date(2023, 0, 2), open: 103.0, high: 107.0, low: 101.0, close: 106.0 },
     { date: new Date(2023, 0, 3), open: 106.0, high: 110.0, low: 104.0, close: 108.0 },
@@ -113,18 +121,13 @@ export function ChartComponent() {
     const xExtents = [xAccessor(chartData[0]), xAccessor(chartData[chartData.length - 1])];
 
     // Calculate MACD
-    interface StockData {
-        date: Date;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
+    type StockData = ChartDataPoint & {
         macd?: {
             macd: number;
             signal: number;
             divergence: number;
         };
-    }
+    };
 
     const macdCalculator = macd()
         .options({

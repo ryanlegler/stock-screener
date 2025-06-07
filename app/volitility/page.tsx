@@ -6,6 +6,7 @@ import { volatilityDataFixtureStocks } from '@/__fixture__/volatility-data-fixtu
 import { quoteDataResponseFixtureStocks } from '@/__fixture__/quotes-data-fixture';
 import MACDChart from '../components/macd-chart';
 import { IS_OFFLINE } from '../constants';
+import { QuoteItem } from '../types/api';
 
 export default async function Page() {
     const { result } = IS_OFFLINE
@@ -20,9 +21,9 @@ export default async function Page() {
     console.log('🚀 ~ HomeImpliedVolatilityData ~ symbols:', symbols);
     const symbolShortList = symbols.slice(0, 13);
 
-    const quotes = (await IS_OFFLINE)
+    const quotes: QuoteItem[] = (await IS_OFFLINE)
         ? quoteDataResponseFixtureStocks.result
-        : APIClient.getQuotes({
+        : await APIClient.getQuotes({
               symbols: symbolShortList,
               fields: 'regularMarketPrice,regularMarketChangePercent,marketCap,shortName',
           });
