@@ -45,7 +45,7 @@
  * ```
  */
 
-const BASE_URL = process.env.RAPIDAPI_HOST!;
+const BASE_URL = `https://${process.env.RAPIDAPI_HOST!}`;
 
 const headers = {
     'X-Rapidapi-Key': process.env.RAPIDAPI_KEY!,

@@ -10,6 +10,42 @@ A Next.js application that displays real-time financial news for selected stock 
 - TypeScript support for type safety
 - Modern React patterns with TanStack Query for data fetching
 - Environment variable configuration for API credentials
+- Report-driven architecture for efficient data management
+
+## Report-Driven Architecture
+
+The application uses a report-driven architecture to efficiently manage stock data and reduce API calls:
+
+### How it Works
+
+1. **Report Generation**
+   - Stock data is fetched and saved as JSON reports
+   - Reports are stored in the `reports` directory
+   - Each report is timestamped and archived
+
+2. **Data Loading**
+   - App loads the latest report on startup
+   - Automatically detects and refreshes stale reports
+   - Manual report generation available via UI button
+
+3. **Benefits**
+   - Reduces API calls and rate limiting issues
+   - Improves application performance
+   - Maintains historical data
+   - Simplifies development and testing
+
+### Report System
+
+```
+├── reports/
+│   ├── latest.json           # Most recent report
+│   └── report-{timestamp}.json # Archived reports
+```
+
+Reports are automatically generated when:
+- No existing report is found
+- The current report is from a previous day
+- User manually triggers a refresh
 
 ## Tech Stack
 
@@ -55,22 +91,31 @@ A Next.js application that displays real-time financial news for selected stock 
 ```
 ├── app/
 │   ├── api/
-│   │   └── news/
-│   │       └── route.ts         # API route handler
+│   │   ├── news/
+│   │   │   └── route.ts       # News API route handler
+│   │   └── reports/
+│   │       └── generate/
+│   │           └── route.ts   # Report generation API
 │   ├── components/
-│   │   ├── news-card.tsx       # News item card component
-│   │   ├── news-feed.tsx       # News feed container
-│   │   └── providers.tsx       # React Query provider
+│   │   ├── news-card.tsx     # News item card component
+│   │   ├── news-feed.tsx     # News feed container
+│   │   ├── stock-screener.tsx # Stock screener component
+│   │   └── providers.tsx     # React Query provider
 │   ├── hooks/
-│   │   └── use-news.ts         # Custom hook for fetching news
+│   │   └── use-news.ts       # Custom hook for fetching news
+│   ├── lib/
+│   │   └── reports.ts        # Report management utilities
 │   ├── types/
-│   │   └── api.ts              # TypeScript interfaces
-│   ├── layout.tsx              # Root layout
-│   └── page.tsx                # Home page
+│   │   └── api.ts            # TypeScript interfaces
+│   ├── layout.tsx            # Root layout
+│   └── page.tsx              # Home page
 ├── components/
-│   └── ui/                     # shadcn/ui components
-├── .env.local                  # Environment variables
-├── tailwind.config.ts         # Tailwind configuration
+│   └── ui/                   # shadcn/ui components
+├── reports/                  # Generated stock reports
+│   ├── latest.json          # Most recent report
+│   └── report-{timestamp}.json # Archived reports
+├── .env.local               # Environment variables
+├── tailwind.config.ts       # Tailwind configuration
 └── package.json
 ```
 

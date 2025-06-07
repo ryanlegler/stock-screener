@@ -26,6 +26,8 @@ export interface ScreenerField {
 
 ///
 
+export type ScreenerResult = ScreenerListResponse;
+
 export interface ScreenerListResponse {
     finance: Finance;
 }
