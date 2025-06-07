@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import { ChartComponent } from './components/chart';
+import { StockScreener } from './components/stock-screener';
 
 export default function Home() {
     return (
         <div className="container mx-auto px-4 py-8">
-            <Link href="/volitility">Volatility</Link>
-
+            <StockScreener />
             <ChartComponent />
         </div>
     );

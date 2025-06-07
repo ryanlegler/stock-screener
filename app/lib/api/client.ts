@@ -10,7 +10,7 @@ import {
     ChartResponse,
 } from '@/app/types/api';
 
-const BASE_URL = 'https://yahoo-finance166.p.rapidapi.com';
+const BASE_URL = process.env.RAPIDAPI_HOST!;
 
 const headers = {
     'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
@@ -43,7 +43,7 @@ export class APIClient {
 
             const requestHeaders = {
                 ...headers,
-                host: 'yahoo-finance166.p.rapidapi.com',
+                host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
                 'accept-encoding': 'gzip, deflate, br, zstd',
@@ -182,7 +182,7 @@ export class APIClient {
 
             const requestHeaders = {
                 ...headers,
-                host: 'yahoo-finance166.p.rapidapi.com',
+                host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
                 'accept-encoding': 'gzip, deflate, br, zstd',
@@ -232,7 +232,7 @@ export class APIClient {
             // Using the exact API endpoint and headers as provided
             const requestHeaders = {
                 ...headers,
-                host: 'yahoo-finance166.p.rapidapi.com',
+                host: process.env.RAPIDAPI_HOST!,
                 accept: '*/*',
                 'accept-language': 'en-US,en;q=0.9',
                 'accept-encoding': 'gzip, deflate, br, zstd',

@@ -21,7 +21,7 @@ export default async function Page() {
     console.log('🚀 ~ HomeImpliedVolatilityData ~ symbols:', symbols);
     const symbolShortList = symbols.slice(0, 13);
 
-    const quotes: QuoteItem[] = (await IS_OFFLINE)
+    const quotes: QuoteItem[] = IS_OFFLINE
         ? quoteDataResponseFixtureStocks.result
         : await APIClient.getQuotes({
               symbols: symbolShortList,
