@@ -7,7 +7,8 @@ import {
     GetChartDataParams,
     GetChartResponse,
     ChartDataPoint,
-    YahooFinanceAPI,
+    ChartResponse,
+    // QuoteResponse
 } from '@/app/types/api';
 
 const BASE_URL = 'https://yahoo-finance166.p.rapidapi.com';
@@ -72,7 +73,7 @@ export class APIClient {
             }
 
             // Parse the raw API response
-            const rawData: YahooFinanceAPI.ChartResponse = await response.json();
+            const rawData: ChartResponse = await response.json();
             console.log('Historical data API response:', rawData);
 
             // Get the chart data from the response
