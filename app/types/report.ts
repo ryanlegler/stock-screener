@@ -7,3 +7,8 @@ export interface Report {
         historicalData: Record<string, ChartDataPoint[]>;
     };
 }
+
+export interface ReportSummary {
+    id: string;
+    generatedAt: string;
+}
