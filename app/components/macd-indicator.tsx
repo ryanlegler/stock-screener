@@ -10,7 +10,7 @@ import {
 import { ChartDataPoint } from '../types/api';
 
 export function MACDIndicator({
-    data,
+    data: rawData,
     height: heightInit,
     width,
 }: {
@@ -18,6 +18,11 @@ export function MACDIndicator({
     height?: number;
     width?: number;
 }) {
+    // Convert timestamps to Date objects
+    const data = rawData.map(d => ({
+        ...d,
+        date: new Date(d.date),
+    }));
     if (!data || data.length === 0) {
         return <div>No MACD data available</div>;
     }
