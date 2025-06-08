@@ -9,16 +9,15 @@ import { MAX_TOP_SYMBOLS } from '@/app/constants';
 
 export async function generateReport(): Promise<{ success: boolean; error?: string }> {
     try {
-        // Get screener data first
         const screenerData = await fetchRawScreenerData();
 
-        // Get top 3 symbols by market cap
-        const top3Symbols = screenerData.quotes
+        // Get top symbols by market cap
+        const topSymbols = screenerData.quotes
             .sort((a, b) => (b.marketCap || 0) - (a.marketCap || 0))
             .slice(0, MAX_TOP_SYMBOLS)
             .map(quote => quote.symbol);
 
-        const historicData = await fetchStockCharts(top3Symbols);
+        const historicData = await fetchStockCharts(topSymbols);
 
         // Create the report
         const report: Report = {
@@ -29,11 +28,11 @@ export async function generateReport(): Promise<{ success: boolean; error?: stri
             },
         };
 
-        // Save to file system
         await saveReport(report);
 
         // Revalidate all pages that use the report data
         revalidateTag('report');
+        revalidateTag('reports-list');
 
         return { success: true };
     } catch (error) {

@@ -13,7 +13,11 @@ export async function fetchYahooFinanceChart({
     interval = '30m',
     range = '1mo',
     region = 'US',
-}: GetChartDataParams): Promise<{ symbol: string; results: ChartDataPoint[]; error: string | null }> {
+}: GetChartDataParams): Promise<{
+    symbol: string;
+    results: ChartDataPoint[];
+    error: string | null;
+}> {
     try {
         const queryParams = new URLSearchParams({
             symbol,
@@ -86,34 +90,45 @@ export async function fetchYahooFinanceChart({
             };
         }
 
-        const results = timestamp.map((time: number, index: number) => {
-            if (
-                quoteData.open[index] === null ||
-                quoteData.high[index] === null ||
-                quoteData.low[index] === null ||
-                quoteData.close[index] === null
-            ) {
-                return null;
-            }
+        // Map timestamp data to chart data points
+        const results = timestamp
+            .map((time: number, index: number) => {
+                const date = new Date(time * 1000);
+                const hasValidData = !(
+                    quoteData.open[index] === null ||
+                    quoteData.high[index] === null ||
+                    quoteData.low[index] === null ||
+                    quoteData.close[index] === null
+                );
 
-            return {
-                date: new Date(time * 1000),
-                open: quoteData.open[index],
-                high: quoteData.high[index],
-                low: quoteData.low[index],
-                close: quoteData.close[index],
-                volume: quoteData.volume[index] || 0,
-                adjclose: adjclose ? adjclose[index] : undefined,
-            };
-        });
+                if (!hasValidData) {
+                    console.log(`${symbol}: Missing price data at ${date.toLocaleString()}`);
+                    return null;
+                }
 
-        const validResults = results.filter(
-            (item): item is NonNullable<typeof item> => item !== null
-        );
+                return {
+                    date,
+                    open: quoteData.open[index],
+                    high: quoteData.high[index],
+                    low: quoteData.low[index],
+                    close: quoteData.close[index],
+                    volume: quoteData.volume[index] || 0,
+                    adjclose: adjclose ? adjclose[index] : undefined,
+                };
+            })
+            .filter((item): item is NonNullable<typeof item> => item !== null);
+
+        console.log(`${symbol}: Final data points after all filtering:`, results.length);
+        if (results.length > 0) {
+            console.log(`${symbol}: Date range:`, {
+                start: results[0].date.toLocaleString(),
+                end: results[results.length - 1].date.toLocaleString(),
+            });
+        }
 
         return {
             symbol,
-            results: validResults,
+            results,
             error: null,
         };
     } catch (error) {

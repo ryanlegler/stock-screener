@@ -5,9 +5,11 @@
  * used in stock analysis, including MACD, RSI, and others.
  */
 
-// No imports needed
+import { ChartDataPoint } from '../types/api';
+import { macd } from 'react-financial-charts';
 
 export interface MACDResult {
+    date?: Date;
     macd: number;
     signal: number;
     histogram: number;
@@ -95,7 +97,7 @@ export function calculateMACD(
             signal: signalLine[i],
             histogram: histogram[i],
             value: closePrices[i + slowPeriod + signalPeriod - 2],
-            price: closePrices[i + slowPeriod + signalPeriod - 2]
+            price: closePrices[i + slowPeriod + signalPeriod - 2],
         });
     }
 
@@ -113,7 +115,7 @@ export function analyzeMACD(macdData: MACDResult[]) {
         waningBearishMomentum: checkWaningBearishMomentum(macdData),
         bullishCrossover: checkBullishCrossover(macdData),
         higherLow: checkHigherLow(macdData),
-        supportBounce: checkSupportBounce(macdData)
+        supportBounce: checkSupportBounce(macdData),
     };
 }
 
@@ -125,8 +127,9 @@ function checkWaningBearishMomentum(macdData: MACDResult[]): boolean {
 
     const lastThree = macdData.slice(-3);
     const allNegative = lastThree.every(d => d.histogram < 0);
-    const increasing = lastThree[0].histogram <= lastThree[1].histogram &&
-                      lastThree[1].histogram <= lastThree[2].histogram;
+    const increasing =
+        lastThree[0].histogram <= lastThree[1].histogram &&
+        lastThree[1].histogram <= lastThree[2].histogram;
 
     return allNegative && increasing;
 }
@@ -178,23 +181,80 @@ function checkHigherLow(macdData: MACDResult[]): boolean {
  * Checks if price is bouncing off a support level
  */
 function checkSupportBounce(macdData: MACDResult[]): boolean {
-    // Need at least 10 data points to identify support levels
     if (macdData.length < 10) return false;
 
-    const prices = macdData.map(d => d.value);
+    const recentData = macdData.slice(-10);
+    const lowestPrice = Math.min(...recentData.map(d => d.price));
+    const currentPrice = recentData[recentData.length - 1].price;
+    const priceChange = (currentPrice - lowestPrice) / lowestPrice;
 
-    // Simple support level detection (more sophisticated methods would use more data)
-    // Find the lowest price in the first half of the data
-    const firstHalf = prices.slice(0, Math.floor(prices.length / 2));
-    const supportLevel = Math.min(...firstHalf);
+    return priceChange > 0.02; // 2% bounce
+}
 
-    // Check if price approached support level (within 2%) and then bounced up
-    const recentPrices = prices.slice(-5);
-    const approachedSupport = recentPrices.some(p => p <= supportLevel * 1.02);
+/**
+ * Checks if a stock qualifies for a MACD trading setup
+ * For demonstration, we'll use a simple criterion:
+ * - MACD line is above signal line
+ * - MACD histogram is positive and increasing
+ */
+export function checkMACDQualification(chartData: ChartDataPoint[], symbol?: string): boolean {
+    if (chartData.length < 2) {
+        console.log('Not enough data points for MACD calculation');
+        return false;
+    }
 
-    // Check if price is now moving up after approaching support
-    const isMovingUp =
-        recentPrices[recentPrices.length - 1] > recentPrices[recentPrices.length - 3];
+    // Convert data for MACD calculation
+    const data = chartData.map(d => ({
+        ...d,
+        date: new Date(d.date),
+    }));
 
-    return approachedSupport && isMovingUp;
+    // Calculate MACD
+    const macdCalculator = macd()
+        .options({
+            fast: 12,
+            slow: 26,
+            signal: 9,
+        })
+        .merge((d: any, macdData: { macd: number; signal: number; divergence: number }) => ({
+            ...d,
+            macd: macdData,
+        }))
+        .accessor((d: any) => d.macd);
+
+    const calculatedData = macdCalculator(data);
+    if (!calculatedData || calculatedData.length < 2) {
+        console.log('No MACD data calculated');
+        return false;
+    }
+
+    // Get the last two data points
+    const lastPoint = calculatedData[calculatedData.length - 1];
+    // console.log('🚀 ~ checkMACDQualification ~ lastPoint:', lastPoint);
+    const prevPoint = calculatedData[calculatedData.length - 2];
+    // console.log('🚀 ~ checkMACDQualification ~ prevPoint:', prevPoint);
+
+    if (!lastPoint.macd || !prevPoint.macd) {
+        console.log('Missing MACD data in points');
+        return false;
+    }
+
+    // Check if MACD is above signal line
+    const macdAboveSignal = lastPoint.macd.macd > lastPoint.macd.signal;
+
+    // Check if histogram is positive and increasing
+    // const currentHistogram = lastPoint.macd.divergence;
+    // const prevHistogram = prevPoint.macd.divergence;
+    // const histogramIncreasing = currentHistogram > prevHistogram && currentHistogram > 0;
+
+    // console.log('MACD Analysis:', {
+    //     symbol,
+    //     macdAboveSignal,
+    //     currentHistogram,
+    //     prevHistogram,
+    //     histogramIncreasing,
+    // });
+
+    // return macdAboveSignal && histogramIncreasing;
+    return macdAboveSignal;
 }

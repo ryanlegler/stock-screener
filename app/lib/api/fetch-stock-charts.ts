@@ -6,7 +6,10 @@ import { fetchYahooFinanceChart } from './yahoo-finance-api';
  * @param symbols - Array of stock symbols to fetch data for
  * @returns Promise<Record<string, ChartDataPoint[]>> Map of symbols to their historical data
  */
-export async function fetchStockCharts(symbols: string[]): Promise<Record<string, ChartDataPoint[]>> {
+export async function fetchStockCharts(
+    symbols: string[],
+    onProgress?: (processed: number) => void
+): Promise<Record<string, ChartDataPoint[]>> {
     const data: Record<string, ChartDataPoint[]> = {};
     for (const symbol of symbols) {
         try {
@@ -26,6 +29,7 @@ export async function fetchStockCharts(symbols: string[]): Promise<Record<string
             console.error(`Failed to fetch data for ${symbol}:`, error);
             data[symbol] = [];
         }
+        onProgress?.(Object.keys(data).length);
     }
     return data;
 }
