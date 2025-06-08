@@ -20,12 +20,13 @@ export function StockChartWrapper({ data, width = 800, height = 400 }: StockChar
     // Convert timestamps to Date objects
     const dataWithDates = data.map(d => ({
         ...d,
-        date: new Date(d.date)
+        date: new Date(d.date),
     }));
 
-    const scaleProvider = discontinuousTimeScaleProviderBuilder()
-        .inputDateAccessor((d: ChartDataPoint & { date: Date }) => d.date);
-    
+    const scaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor(
+        (d: ChartDataPoint & { date: Date }) => d.date
+    );
+
     const { data: scaledData, xScale, xAccessor, displayXAccessor } = scaleProvider(dataWithDates);
 
     return (
@@ -33,7 +34,6 @@ export function StockChartWrapper({ data, width = 800, height = 400 }: StockChar
             width={width}
             height={height}
             ratio={1}
-            margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
             seriesName="Stock Chart"
             data={scaledData}
             xScale={xScale}

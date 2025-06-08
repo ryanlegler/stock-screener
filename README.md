@@ -1,17 +1,16 @@
-# Stock Market News Screener
+# Stock Market Technical Analysis Screener
 
-A Next.js application that displays real-time financial news for selected stock symbols using the Yahoo Finance API via RapidAPI.
+A Next.js application that performs technical analysis on stocks using MACD indicators and historical price data via the Yahoo Finance API.
 
 ## Features
 
-- Real-time financial news feed for multiple stock symbols
-- Historical price data with customizable intervals and ranges
-- Clean, responsive UI using shadcn/ui components
-- Server-side API route with rate limiting and caching
+- Automated stock screening with MACD (Moving Average Convergence Divergence) analysis
+- Historical price data visualization with interactive charts
+- Report-driven architecture for efficient data management and analysis
+- Clean, responsive UI built with Tailwind CSS
+- Server-side API integration with caching
 - TypeScript support for type safety
-- Modern React patterns with TanStack Query for data fetching
 - Environment variable configuration for API credentials
-- Report-driven architecture for efficient data management
 
 ## Report-Driven Architecture
 
@@ -53,11 +52,11 @@ Reports are automatically generated when:
 
 ## Tech Stack
 
-- [Next.js 14](https://nextjs.org/) - React framework with [Geist](https://vercel.com/font) font optimization
+- [Next.js 14](https://nextjs.org/) - React framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [TanStack Query](https://tanstack.com/query/latest) - Data fetching and caching
-- [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
+- Technical Analysis Libraries - For MACD calculations
+- Yahoo Finance API - For stock data
 - [Zod](https://zod.dev/) - Runtime type validation
 
 ## Prerequisites
@@ -94,11 +93,19 @@ Reports are automatically generated when:
 
 ```
 ├── app/
-│   ├── api/
-│   │   ├── news/
-│   │   │   └── route.ts       # News API route handler
+│   ├── components/
+│   │   ├── stock-charts.tsx        # Main chart grid component
+│   │   ├── stock-chart-wrapper.tsx # Individual chart wrapper
+│   │   ├── macd-indicator.tsx     # MACD analysis component
+│   │   ├── generate-report-button.tsx
+│   │   ├── report-status.tsx
+│   │   └── reports-list.tsx
+│   ├── lib/
+│   │   ├── api/
+│   │   │   ├── screener.ts         # Stock screening logic
+│   │   │   └── screener-pagination.ts
 │   │   └── reports/
-│   │       └── generate/
+│   │       └── generate/           # Report generation
 │   │           └── route.ts   # Report generation API
 │   ├── lib/
 │   │   └── api/
