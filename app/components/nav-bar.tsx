@@ -9,18 +9,6 @@ export function NavBar() {
                         Stock Screener
                     </Link>
                 </div>
-
-                <div className="flex space-x-6">
-                    <Link href="/" className="text-gray-600 transition-colors hover:text-blue-600">
-                        Home
-                    </Link>
-                    <Link
-                        href="/volatility"
-                        className="text-gray-600 transition-colors hover:text-blue-600"
-                    >
-                        Implied Volatility
-                    </Link>
-                </div>
             </div>
         </nav>
     );

@@ -295,14 +295,6 @@ export interface QuotesParams {
     region?: string;
 }
 
-export interface ImpliedVolatilityParams {
-    language?: string;
-    region?: string;
-    offset?: number;
-    quote_type?: string;
-    count?: number;
-}
-
 // ==========================================
 // 3. TRANSFORMED DATA TYPES
 // ==========================================
@@ -436,11 +428,6 @@ export interface ImpliedVolatilityItem {
     regularMarketChangePercent: number;
     impliedVolatility: number;
     sector?: string;
-}
-
-export interface ImpliedVolatilityResponse {
-    result: ImpliedVolatilityItem[];
-    error: null | string;
 }
 
 // ==========================================

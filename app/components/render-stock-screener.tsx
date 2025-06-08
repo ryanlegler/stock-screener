@@ -1,4 +1,4 @@
-import { Quote, Result } from '../types';
+import { CombinedScreenerResult, ScreenerItem } from '../types/screener';
 
 function formatNumber(num: number | undefined, prefix = '', suffix = '', decimals = 2): string {
     if (num === undefined) return 'N/A';
@@ -8,10 +8,10 @@ function formatNumber(num: number | undefined, prefix = '', suffix = '', decimal
     return `${prefix}${num.toFixed(decimals)}${suffix}`;
 }
 
-function StockCard({ quote }: { quote: Quote }) {
+function StockCard({ quote }: { quote: ScreenerItem }) {
     const percentChange = quote.regularMarketChangePercent?.toFixed(2) || '0';
     const isPositive = Number(percentChange) > 0;
-    const priceChange = quote.regularMarketChange?.toFixed(2) || '0';
+    const priceChange = '0'; // regularMarketChange is not in ScreenerItem
 
     return (
         <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-md transition-shadow hover:shadow-lg">
@@ -63,22 +63,16 @@ function StockCard({ quote }: { quote: Quote }) {
     );
 }
 
-export function RenderStockScreener({ screenerResult }: { screenerResult: Result }) {
-    const listOfSymbols = screenerResult.quotes.map(quote => quote.symbol);
+export function RenderStockScreener({ data }: { data: CombinedScreenerResult }) {
+    const listOfSymbols = data.results.map(item => item.symbol);
     console.log('🚀 ~ RenderStockScreener ~ listOfSymbols:', listOfSymbols);
     return (
-        <div className="p-4">
-            <div className="mb-4">
-                <h2 className="mb-2 text-xl font-bold">Stock Screener Results</h2>
-                <p className="text-sm text-gray-600">
-                    Showing {screenerResult.count} of {screenerResult.total} results
-                </p>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {screenerResult.quotes.map(quote => (
-                    <StockCard key={quote.symbol} quote={quote} />
-                ))}
-            </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {data.results.length === 0 ? (
+                <p>No results found</p>
+            ) : (
+                data.results.map(item => <StockCard key={item.symbol} quote={item} />)
+            )}
         </div>
     );
 }

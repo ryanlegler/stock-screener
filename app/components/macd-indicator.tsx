@@ -18,8 +18,17 @@ export function MACDIndicator({
     height?: number;
     width?: number;
 }) {
+    if (!data || data.length === 0) {
+        return <div>No MACD data available</div>;
+    }
+
     const scaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
     const { data: chartData, xScale, xAccessor, displayXAccessor } = scaleProvider(data);
+
+    if (!chartData || chartData.length === 0) {
+        return <div>Invalid MACD data</div>;
+    }
+
     const xExtents = [xAccessor(chartData[0]), xAccessor(chartData[chartData.length - 1])];
 
     // Calculate MACD

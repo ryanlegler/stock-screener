@@ -5,7 +5,14 @@
  * used in stock analysis, including MACD, RSI, and others.
  */
 
-import { MACDData, ChartDataPoint } from '../types/api';
+// No imports needed
+
+export interface MACDResult {
+    macd: number;
+    signal: number;
+    histogram: number;
+    value: number;
+}
 
 /**
  * Calculates the Exponential Moving Average (EMA) for a given dataset
@@ -37,36 +44,26 @@ export function calculateEMA(data: number[], period: number, smoothingFactor?: n
 /**
  * Calculates the Moving Average Convergence Divergence (MACD) for a given dataset
  *
- * @param historicalData - Array of historical price data points
+ * @param closePrices - Array of closing prices
  * @param fastPeriod - Period for the fast EMA (default: 12)
  * @param slowPeriod - Period for the slow EMA (default: 26)
  * @param signalPeriod - Period for the signal line EMA (default: 9)
  * @returns Array of MACD data points
  */
 export function calculateMACD(
-    chartData: ChartDataPoint[],
+    closePrices: number[],
     fastPeriod: number = 12,
     slowPeriod: number = 26,
     signalPeriod: number = 9
-): MACDData[] {
-    if (chartData.length < slowPeriod + signalPeriod) {
+): MACDResult[] {
+    if (closePrices.length < slowPeriod + signalPeriod) {
         console.warn('Insufficient data for MACD calculation');
         return [];
     }
 
-    // Extract closing prices and filter out undefined values
-    const closingPrices = chartData
-        .map(data => data.close)
-        .filter((price): price is number => price !== undefined);
-
-    if (closingPrices.length < slowPeriod + signalPeriod) {
-        console.warn('Insufficient valid price data for MACD calculation');
-        return [];
-    }
-
     // Calculate fast and slow EMAs
-    const fastEMA = calculateEMA(closingPrices, fastPeriod);
-    const slowEMA = calculateEMA(closingPrices, slowPeriod);
+    const fastEMA = calculateEMA(closePrices, fastPeriod);
+    const slowEMA = calculateEMA(closePrices, slowPeriod);
 
     // Calculate MACD line (fast EMA - slow EMA)
     const macdLine: number[] = [];
@@ -88,29 +85,15 @@ export function calculateMACD(
     }
 
     // Combine data into result
-    const result: MACDData[] = [];
-
-    // Start index for the final dataset
-    const dataStartIdx = slowPeriod + signalPeriod - 2;
+    const result: MACDResult[] = [];
 
     for (let i = 0; i < histogram.length; i++) {
-        const dataIdx = i + dataStartIdx;
-        if (dataIdx < chartData.length) {
-            const dataPoint = chartData[dataIdx];
-            const date = dataPoint.date;
-            const price = dataPoint.close;
-
-            // Only include points that have both date and price
-            if (date !== undefined && price !== undefined) {
-                result.push({
-                    date,
-                    macdLine: macdLine[i + signalPeriod - 1],
-                    signalLine: signalLine[i],
-                    histogram: histogram[i],
-                    price,
-                });
-            }
-        }
+        result.push({
+            macd: macdLine[i + signalPeriod - 1],
+            signal: signalLine[i],
+            histogram: histogram[i],
+            value: closePrices[i + slowPeriod + signalPeriod - 2]
+        });
     }
 
     return result;
@@ -122,79 +105,47 @@ export function calculateMACD(
  * @param macdData - Array of MACD data points
  * @returns Object containing analysis results
  */
-export function analyzeMACD(macdData: MACDData[]) {
-    if (macdData.length < 5) {
-        return {
-            waningBearishMomentum: false,
-            bullishCrossover: false,
-            higherLow: false,
-            supportBounce: false,
-        };
-    }
-
-    // Check for decreasing red histogram bars (waning bearish momentum)
-    const waningBearishMomentum = checkWaningBearishMomentum(macdData);
-
-    // Check for MACD line crossing above the Signal line (bullish crossover)
-    const bullishCrossover = checkBullishCrossover(macdData);
-
-    // Check for price forming a higher low
-    const higherLow = checkHigherLow(macdData);
-
-    // Check for price bouncing off support level
-    const supportBounce = checkSupportBounce(macdData);
-
+export function analyzeMACD(macdData: MACDResult[]) {
     return {
-        waningBearishMomentum,
-        bullishCrossover,
-        higherLow,
-        supportBounce,
+        waningBearishMomentum: checkWaningBearishMomentum(macdData),
+        bullishCrossover: checkBullishCrossover(macdData),
+        higherLow: checkHigherLow(macdData),
+        supportBounce: checkSupportBounce(macdData)
     };
 }
 
 /**
  * Checks if there is waning bearish momentum (decreasing red histogram bars)
  */
-function checkWaningBearishMomentum(macdData: MACDData[]): boolean {
-    // Look at the last 3-5 bars
-    const recentBars = macdData.slice(-5);
+function checkWaningBearishMomentum(macdData: MACDResult[]): boolean {
+    if (macdData.length < 3) return false;
 
-    // Check if we have negative histogram bars that are becoming less negative
-    let consecutiveWaning = 0;
-    for (let i = 1; i < recentBars.length; i++) {
-        const current = recentBars[i].histogram;
-        const previous = recentBars[i - 1].histogram;
+    const lastThree = macdData.slice(-3);
+    const allNegative = lastThree.every(d => d.histogram < 0);
+    const increasing = lastThree[0].histogram <= lastThree[1].histogram &&
+                      lastThree[1].histogram <= lastThree[2].histogram;
 
-        // Both bars are negative (red) and current is less negative than previous
-        if (current < 0 && previous < 0 && current > previous) {
-            consecutiveWaning++;
-        } else {
-            consecutiveWaning = 0;
-        }
-    }
-
-    // Return true if we have at least 2 consecutive waning red bars
-    return consecutiveWaning >= 2;
+    return allNegative && increasing;
 }
 
 /**
  * Checks if there is a bullish crossover (MACD line crosses above Signal line)
  */
-function checkBullishCrossover(macdData: MACDData[]): boolean {
+function checkBullishCrossover(macdData: MACDResult[]): boolean {
     // Need at least 2 data points to check for a crossover
     if (macdData.length < 2) return false;
 
-    const current = macdData[macdData.length - 1];
-    const previous = macdData[macdData.length - 2];
+    const last = macdData[macdData.length - 1];
+    const prev = macdData[macdData.length - 2];
 
     // MACD line was below signal line and is now above it
-    return previous.macdLine < previous.signalLine && current.macdLine > current.signalLine;
+    return prev.macd <= prev.signal && last.macd > last.signal;
 }
 
 /**
  * Checks if price is forming a higher low pattern
  */
-function checkHigherLow(macdData: MACDData[]): boolean {
+function checkHigherLow(macdData: MACDResult[]): boolean {
     // Need at least 5 data points to identify a pattern
     if (macdData.length < 5) return false;
 
@@ -223,11 +174,11 @@ function checkHigherLow(macdData: MACDData[]): boolean {
 /**
  * Checks if price is bouncing off a support level
  */
-function checkSupportBounce(macdData: MACDData[]): boolean {
+function checkSupportBounce(macdData: MACDResult[]): boolean {
     // Need at least 10 data points to identify support levels
     if (macdData.length < 10) return false;
 
-    const prices = macdData.map(d => d.price);
+    const prices = macdData.map(d => d.value);
 
     // Simple support level detection (more sophisticated methods would use more data)
     // Find the lowest price in the first half of the data

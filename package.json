@@ -13,6 +13,10 @@
         "types:check": "tsc --noEmit"
     },
     "dependencies": {
+        "@react-financial-charts/axes": "^2.0.0",
+        "@react-financial-charts/core": "^2.0.0",
+        "@react-financial-charts/scales": "^2.0.0",
+        "@react-financial-charts/series": "^2.0.0",
         "@tailwindcss/line-clamp": "^0.4.4",
         "@tanstack/react-query": "^5.75.2",
         "@tanstack/react-query-devtools": "^5.75.2",

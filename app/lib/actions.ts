@@ -5,12 +5,11 @@
 'use server';
 
 import { APIClient } from './api/client';
-import { calculateMACD, analyzeMACD } from './indicators';
-import { MACDData } from '../types/api';
+import { calculateMACD, analyzeMACD, MACDResult } from './indicators';
 
 export interface MACDAnalysisResult {
     symbol: string;
-    macdData: MACDData[];
+    macdData: MACDResult[];
     analysis: {
         waningBearishMomentum: boolean;
         bullishCrossover: boolean;
@@ -32,41 +31,36 @@ export async function getMACDAnalysis(
     symbol: string,
     interval: string,
     range: string
-): Promise<MACDAnalysisResult> {
+): Promise<MACDAnalysisResult | null> {
     try {
         // Fetch historical data
         const data = await APIClient.getChart({ symbol, interval, range });
 
-        // keep this
-
-        if (!data.results.length) {
-            return {
-                symbol,
-                macdData: [],
-                analysis: {
-                    waningBearishMomentum: false,
-                    bullishCrossover: false,
-                    higherLow: false,
-                    supportBounce: false,
-                },
-                error: data.error || 'No historical data available',
-            };
+        // Return null for symbols with no data (they will be filtered out)
+        if (!data || !data.results || !data.results.length) {
+            return null;
         }
 
-        // Calculate MACD indicators
-        const macdData = calculateMACD(data.results);
+        // Calculate MACD for the historical data
+        const closePrices = data.results
+            .map(point => point.close)
+            .filter((price): price is number => typeof price === 'number' && !isNaN(price));
 
-        // Analyze MACD for bullish signals
+        if (closePrices.length === 0) {
+            return null;
+        }
+
+        const macdData = calculateMACD(closePrices);
         const analysis = analyzeMACD(macdData);
 
         return {
             symbol,
             macdData,
             analysis,
-            error: null,
+            error: null
         };
     } catch (error) {
-        console.error(`Error analyzing MACD for ${symbol}:`, error);
+        console.error('Error in MACD analysis:', error);
         return {
             symbol,
             macdData: [],
@@ -74,9 +68,9 @@ export async function getMACDAnalysis(
                 waningBearishMomentum: false,
                 bullishCrossover: false,
                 higherLow: false,
-                supportBounce: false,
+                supportBounce: false
             },
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : 'Failed to analyze MACD'
         };
     }
 }
@@ -98,7 +92,40 @@ export async function getMACDAnalysisMultiple(
     const results = await Promise.all(
         symbols.map(symbol => getMACDAnalysis(symbol, interval, range))
     );
-    console.log('🚀 ~ MACDAnalysisResult:', results);
 
-    return results;
+    // Filter out null results (symbols with no data)
+    const validResults = results.filter((result): result is MACDAnalysisResult => result !== null);
+    console.log('🚀 ~ MACDAnalysisResult:', validResults);
+
+    return validResults;
+}
+
+import { getHistoricData } from './api/get-historic-data';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+
+/**
+ * Fetches historical data for multiple symbols and saves it to a report
+ */
+export async function generateStockReport(symbols: string[]) {
+    // Fetch historical data for all symbols
+    const historicalData = await getHistoricData(symbols);
+
+    // Create report structure
+    const timestamp = new Date().toISOString();
+    const report = {
+        timestamp,
+        stocks: Object.entries(historicalData).map(([symbol, data]) => ({
+            symbol,
+            historicalData: data,
+            error: data.length === 0 ? 'No historical data available' : null
+        }))
+    };
+
+    // Save report to file
+    const reportsDir = join(process.cwd(), 'reports');
+    const reportPath = join(reportsDir, `report-${timestamp}.json`);
+    await writeFile(reportPath, JSON.stringify(report, null, 2));
+
+    return report;
 }

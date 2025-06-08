@@ -1,23 +1,26 @@
-import { Result } from '../types';
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { unstable_cache } from 'next/cache';
+import { Report } from '../types/report';
 
-export async function getLatestReport(): Promise<{ data: Result; generatedAt: string } | null> {
-    try {
-        const response = await fetch('/api/reports/generate');
-        const data = await response.json();
+const LATEST_REPORT_PATH = path.resolve('./data/reports/latest.json');
 
-        if (!data.exists || !data.report) {
+export const getLatestReport = unstable_cache(
+    async (): Promise<Report | null> => {
+        try {
+            const reportContent = await readFile(LATEST_REPORT_PATH, 'utf-8');
+            return JSON.parse(reportContent) as Report;
+        } catch (error) {
+            if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+                // Report file doesn't exist yet
+                return null;
+            }
+            console.error('Failed to get latest report:', error);
             return null;
         }
+    },
+    ['report'],
+    { tags: ['report'] }
+);
 
-        return data.report;
-    } catch (error) {
-        console.error('Failed to get latest report:', error);
-        return null;
-    }
-}
 
-export function isReportStale(generatedAt: string): boolean {
-    const reportDate = new Date(generatedAt);
-    const now = new Date();
-    return reportDate.toDateString() !== now.toDateString();
-}

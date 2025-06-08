@@ -2,16 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { RenderStockScreener } from './render-stock-screener';
-import { getLatestReport, isReportStale } from '../lib/reports';
-import { Result } from '../types';
+import { getLatestReport } from '../lib/reports';
+
+// Check if report is from a different day
+function isReportStale(generatedAt: string): boolean {
+    const reportDate = new Date(generatedAt);
+    const now = new Date();
+    return reportDate.toDateString() !== now.toDateString();
+}
+import { CombinedScreenerResult } from '../types/screener';
 import { ChartDataPoint } from '../types/api';
-import { ChartComponent } from './chart';
 import { MACDIndicator } from './macd-indicator';
 
 export function StockScreener() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState<Result | null>(null);
+    const [data, setData] = useState<CombinedScreenerResult | null>(null);
     const [generating, setGenerating] = useState(false);
     const [historicData, setHistoricData] = useState<Record<string, ChartDataPoint[]>>({});
 
@@ -161,7 +167,7 @@ export function StockScreener() {
                                             ${quote.regularMarketPrice?.toFixed(2)}
                                         </div>
                                         <div className="text-sm text-gray-600">
-                                            Market Cap: ${(quote.marketCap / 1e9).toFixed(2)}B
+                                            Market Cap: ${quote.marketCap ? (quote.marketCap / 1e9).toFixed(2) : 'N/A'}B
                                         </div>
                                         {chartData.length > 0 && (
                                             <div className="mt-2 border-t border-gray-100 pt-2">
@@ -208,7 +214,7 @@ export function StockScreener() {
                 </div>
             )}
 
-            {data && <RenderStockScreener screenerResult={data} />}
+            {data && <RenderStockScreener data={data} />}
         </div>
     );
 }

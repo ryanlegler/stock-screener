@@ -1,14 +1,26 @@
 import {
     APIError,
-    ImpliedVolatilityParams,
-    ImpliedVolatilityResponse,
+    GetChartDataParams,
+    ChartResponse,
     QuotesParams,
     QuoteItem,
-    GetChartDataParams,
-    GetChartResponse,
-    ChartDataPoint,
-    ChartResponse,
 } from '@/app/types/api';
+
+interface ChartDataPoint {
+    date: Date;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+    adjclose?: number;
+}
+
+interface GetChartResponse {
+    symbol: string;
+    results: ChartDataPoint[];
+    error: string | null;
+}
 
 const getHeaders = () => ({
     'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
@@ -52,11 +64,11 @@ export class APIClient {
             // Using the correct endpoint path from the documentation
             const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
             const fullUrl = `${baseUrl}/api/stock/get-chart?${queryParams.toString()}`;
-            
+
             console.log('API Request:', {
                 url: fullUrl,
                 headers: requestHeaders,
-                params: Object.fromEntries(queryParams.entries())
+                params: Object.fromEntries(queryParams.entries()),
             });
 
             console.log(
@@ -84,23 +96,40 @@ export class APIClient {
 
             // Get the chart data from the response
             const chartResult = rawData.chart?.result?.[0];
+            console.log('🚀 ~ APIClient ~ chartResult:', chartResult);
 
             if (!chartResult || !chartResult.timestamp || !chartResult.indicators?.quote?.[0]) {
-                console.error('Invalid chart data structure:', rawData);
+                console.warn(`No chart data available for ${symbol}`);
                 return {
                     symbol,
                     results: [],
-                    error: 'No historical data available or invalid data structure',
+                    error: 'No historical data available',
                 };
             }
 
-            const { timestamp, indicators } = chartResult;
-            const quotes = indicators.quote[0];
-            const adjclose = indicators.adjclose?.[0]?.adjclose;
+            // Check if quote data is empty (some stocks return empty quote object)
+            const quoteData = chartResult.indicators.quote[0];
+            if (Object.keys(quoteData).length === 0) {
+                console.warn(`Empty quote data for ${symbol}`);
+                return {
+                    symbol,
+                    results: [],
+                    error: 'No price data available for this time range',
+                };
+            }
+
+            const { timestamp } = chartResult;
+            const adjclose = chartResult.indicators.adjclose?.[0]?.adjclose;
 
             // Validate that we have all the required data arrays
-            if (!quotes.open || !quotes.high || !quotes.low || !quotes.close || !quotes.volume) {
-                console.error('Missing required price data in response:', quotes);
+            if (
+                !quoteData.open ||
+                !quoteData.high ||
+                !quoteData.low ||
+                !quoteData.close ||
+                !quoteData.volume
+            ) {
+                console.warn(`Missing required price data for ${symbol}:`, quoteData);
                 return {
                     symbol,
                     results: [],
@@ -115,37 +144,37 @@ export class APIClient {
                 );
             }
 
-            // Transform the raw API data into our application's data format
-            const mappedData = timestamp.map((time: number, index: number) => {
+            // Map the data into our format
+            const results = timestamp.map((time: number, index: number) => {
                 // Skip any data points with null/undefined values
                 if (
-                    quotes.open[index] === null ||
-                    quotes.high[index] === null ||
-                    quotes.low[index] === null ||
-                    quotes.close[index] === null
+                    quoteData.open[index] === null ||
+                    quoteData.high[index] === null ||
+                    quoteData.low[index] === null ||
+                    quoteData.close[index] === null
                 ) {
                     return null;
                 }
 
                 return {
-                    date: time * 1000, // Convert Unix seconds to milliseconds
-                    open: quotes.open[index],
-                    high: quotes.high[index],
-                    low: quotes.low[index],
-                    close: quotes.close[index],
-                    volume: quotes.volume[index] || 0,
+                    date: new Date(time * 1000), // Convert Unix seconds to Date
+                    open: quoteData.open[index],
+                    high: quoteData.high[index],
+                    low: quoteData.low[index],
+                    close: quoteData.close[index],
+                    volume: quoteData.volume[index] || 0,
                     adjclose: adjclose ? adjclose[index] : undefined,
                 };
             });
 
-            // Filter out null values and create properly typed array
-            const results: ChartDataPoint[] = mappedData.filter(
+            // Filter out null values
+            const validResults = results.filter(
                 (item): item is NonNullable<typeof item> => item !== null
             );
 
             return {
                 symbol,
-                results,
+                results: validResults,
                 error: null,
             };
         } catch (error) {
@@ -215,58 +244,6 @@ export class APIClient {
 
             const data = await response.json();
             return data.quoteResponse?.result;
-        } catch (error) {
-            console.error('API request failed:', error);
-            throw error;
-        }
-    }
-
-    static async getHighestImpliedVolatility({
-        language = 'en-US',
-        region = 'US',
-        offset = 0,
-        // quote_type = 'STOCK',
-        count = 30,
-    }: ImpliedVolatilityParams = {}): Promise<ImpliedVolatilityResponse> {
-        try {
-            const queryParams = new URLSearchParams({
-                language,
-                region,
-                offset: offset.toString(),
-                // quote_type,
-                count: count.toString(),
-            });
-
-            // Using the exact API endpoint and headers as provided
-            const requestHeaders = {
-                ...getHeaders(),
-                host: process.env.RAPIDAPI_HOST!,
-                accept: '*/*',
-                'accept-language': 'en-US,en;q=0.9',
-                'accept-encoding': 'gzip, deflate, br, zstd',
-            };
-
-            const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
-            const fullUrl = `${baseUrl}/api/market/get-highest-implied-volatility?${queryParams.toString()}`;
-
-            const response = await fetch(fullUrl, {
-                headers: requestHeaders,
-                next: {
-                    revalidate: 300, // Cache for 5 minutes
-                },
-            });
-
-            if (!response.ok) {
-                const error: APIError = {
-                    status: response.status,
-                    message: `API request failed with status ${response.status}`,
-                };
-                throw error;
-            }
-
-            const { finance } = (await response.json()) || {};
-
-            return finance;
         } catch (error) {
             console.error('API request failed:', error);
             throw error;
