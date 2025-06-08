@@ -1,5 +1,5 @@
 'use server';
-import { mkdir, writeFile, readdir } from 'fs/promises';
+import { mkdir, writeFile, readdir, unlink } from 'fs/promises';
 import path from 'path';
 import { Report } from '../../types/report';
 
@@ -44,5 +44,15 @@ export async function listReports(): Promise<{ timestamp: string; path: string }
     } catch (error) {
         console.error('Error listing reports:', error);
         return [];
+    }
+}
+
+export async function deleteReport(reportPath: string): Promise<boolean> {
+    try {
+        await unlink(reportPath);
+        return true;
+    } catch (error) {
+        console.error('Error deleting report:', error);
+        return false;
     }
 }
