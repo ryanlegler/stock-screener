@@ -5,6 +5,7 @@ export const getChartResponseFixture: GetChartResponse = {
     symbol: 'AAPL',
     results: [
         {
+            date: new Date(),
             meta: {
                 currency: 'USD',
                 symbol: 'AAPL',

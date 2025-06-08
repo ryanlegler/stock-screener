@@ -12,6 +12,7 @@ export interface MACDResult {
     signal: number;
     histogram: number;
     value: number;
+    price: number;
 }
 
 /**
@@ -88,11 +89,13 @@ export function calculateMACD(
     const result: MACDResult[] = [];
 
     for (let i = 0; i < histogram.length; i++) {
+        const macd = macdLine[i + signalPeriod - 1];
         result.push({
-            macd: macdLine[i + signalPeriod - 1],
+            macd,
             signal: signalLine[i],
             histogram: histogram[i],
-            value: closePrices[i + slowPeriod + signalPeriod - 2]
+            value: closePrices[i + slowPeriod + signalPeriod - 2],
+            price: closePrices[i + slowPeriod + signalPeriod - 2]
         });
     }
 

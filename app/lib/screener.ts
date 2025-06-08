@@ -2,7 +2,7 @@ import { getAllScreenerResults } from './api/screener-pagination';
 import { ScreenerResult } from '../types/screener';
 import { MAX_SCREENER_LIMIT } from '../constants';
 
-export async function getScreenerData(): Promise<ScreenerResult> {
+export async function fetchRawScreenerData(): Promise<ScreenerResult> {
     const result = await getAllScreenerResults({
         sortField: 'percentchange',
         sortType: 'DESC',

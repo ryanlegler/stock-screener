@@ -1,8 +1,8 @@
 'use server';
 
 import { revalidateTag } from 'next/cache';
-import { getScreenerData } from '../screener';
-import { getHistoricData } from '../api/get-historic-data';
+import { fetchRawScreenerData } from '../screener';
+import { fetchStockCharts } from '../api/fetch-stock-charts';
 import { saveReport } from '../reports/save-report';
 import { Report } from '../../types/report';
 import { MAX_TOP_SYMBOLS } from '@/app/constants';
@@ -10,8 +10,7 @@ import { MAX_TOP_SYMBOLS } from '@/app/constants';
 export async function generateReport(): Promise<{ success: boolean; error?: string }> {
     try {
         // Get screener data first
-        const screenerData = await getScreenerData();
-        console.log('🚀 ~ generateReport ~ screenerData:', screenerData);
+        const screenerData = await fetchRawScreenerData();
 
         // Get top 3 symbols by market cap
         const top3Symbols = screenerData.quotes
@@ -19,9 +18,7 @@ export async function generateReport(): Promise<{ success: boolean; error?: stri
             .slice(0, MAX_TOP_SYMBOLS)
             .map(quote => quote.symbol);
 
-        console.log('🚀 ~ generateReport ~ top3Symbols:', top3Symbols);
-        // Get historical data for these symbols
-        const historicData = await getHistoricData(top3Symbols);
+        const historicData = await fetchStockCharts(top3Symbols);
 
         // Create the report
         const report: Report = {

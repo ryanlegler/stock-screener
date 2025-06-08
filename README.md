@@ -12,52 +12,55 @@ A Next.js application that performs technical analysis on stocks using MACD indi
 - TypeScript support for type safety
 - Environment variable configuration for API credentials
 
-## Report-Driven Architecture
+## Architecture
 
-The application uses a report-driven architecture to efficiently manage stock data and reduce API calls:
+The application uses a layered architecture to efficiently manage stock data and reduce API calls:
 
-### How it Works
+### Data Flow
 
-1. **Report Generation**
+1. **API Layer** (`/app/lib/api/`)
+   - `fetch-chart-data.ts` - Low-level function for fetching historical price data
+   - `get-historic-data.ts` - Fetches and formats historical data for multiple symbols
+   - `screener-pagination.ts` - Handles paginated screener API requests
 
-    - Stock data is fetched and saved as JSON reports
-    - Reports are stored in the `reports` directory
-    - Each report is timestamped and archived
+2. **Core Business Logic** (`/app/lib/`)
+   - `screener.ts` - `fetchRawScreenerData()` gets raw screener data
+   - `server-actions.ts` - `getScreenerData()` orchestrates data flow:
+     - Manages report caching
+     - Adds historical data
+     - Limits result set
+     - Returns combined data
 
-2. **Data Loading**
+3. **Report System** (`/app/lib/reports/`)
+   - Reports are stored as JSON files
+   - Each report is timestamped
+   - Latest report is cached for performance
+   ```
+   ├── reports/
+   │   ├── latest.json           # Most recent report
+   │   └── report-{timestamp}.json # Archived reports
+   ```
 
-    - App loads the latest report on startup
-    - Automatically detects and refreshes stale reports
-    - Manual report generation available via UI button
-
-3. **Benefits**
-    - Reduces API calls and rate limiting issues
-    - Improves application performance
-    - Maintains historical data
-    - Simplifies development and testing
-
-### Report System
-
-```
-├── reports/
-│   ├── latest.json           # Most recent report
-│   └── report-{timestamp}.json # Archived reports
-```
+### Report Generation
 
 Reports are automatically generated when:
-
 - No existing report is found
-- The current report is from a previous day
-- User manually triggers a refresh
+- Current report is from a previous day
+- User manually triggers a refresh via UI
+
+### Benefits
+- Clear separation of concerns between API calls and business logic
+- Efficient data caching through report system
+- Rate limiting protection via pagination
+- Simplified development and testing
 
 ## Tech Stack
 
-- [Next.js 14](https://nextjs.org/) - React framework
+- [Next.js 14](https://nextjs.org/) - React framework with Server Actions
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
-- Technical Analysis Libraries - For MACD calculations
-- Yahoo Finance API - For stock data
-- [Zod](https://zod.dev/) - Runtime type validation
+- [Yahoo Finance API](https://rapidapi.com/apidojo/api/yahoo-finance1/) - Stock data
+- [Geist](https://vercel.com/font) - Font optimization
 
 ## Prerequisites
 

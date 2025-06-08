@@ -1,8 +1,7 @@
-import { APIClient } from './api/client';
+import { fetchStockCharts } from './api/fetch-stock-charts';
 import { getLatestReport } from './reports';
-import { getScreenerData as getScreenerResults } from './screener';
+import { fetchRawScreenerData as getScreenerResults } from './screener';
 import { CombinedScreenerResult, ScreenerResult } from '../types/screener';
-import { ChartDataPoint } from '../types/api';
 import { MAX_TOP_SYMBOLS } from '../constants';
 
 // Check if report is from a different day
@@ -12,7 +11,7 @@ function isReportStale(generatedAt: string): boolean {
     return reportDate.toDateString() !== now.toDateString();
 }
 
-export async function getScreenerData(): Promise<CombinedScreenerResult> {
+export async function fetchScreenerDataWithHistory(): Promise<CombinedScreenerResult> {
     try {
         // Get or generate report
         const report = await getLatestReport();
@@ -36,40 +35,14 @@ export async function getScreenerData(): Promise<CombinedScreenerResult> {
 
         // Fetch historical data for the symbols
         const symbols = limitedData.results.map(result => result.symbol);
-        const historicDataPromises = symbols.map(symbol =>
-            APIClient.getChart({
-                symbol,
-                interval: '1h',
-                range: '7d',
-                region: 'US',
-            })
-        );
-
-        const results = await Promise.all(historicDataPromises);
-        const historicalData: Record<string, ChartDataPoint[]> = {};
-
-        // Transform the data into the correct format
-        symbols.forEach((symbol, index) => {
-            const chartData = results[index];
-            if (chartData && chartData.results) {
-                historicalData[symbol] = chartData.results.map(point => ({
-                    date: point.date,
-                    open: point.open,
-                    high: point.high,
-                    low: point.low,
-                    close: point.close,
-                    volume: point.volume,
-                    adjclose: point.adjclose,
-                }));
-            }
-        });
+        const historicalData = await fetchStockCharts(symbols);
 
         return {
             ...limitedData,
             historicalData,
         };
     } catch (error) {
-        console.error('Error in getScreenerData:', error);
+        console.error('Error in fetchScreenerDataWithHistory:', error);
         throw error;
     }
 }
