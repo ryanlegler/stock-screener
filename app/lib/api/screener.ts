@@ -149,14 +149,13 @@ import { ScreenerListResponse } from '../../types';
  * @returns Promise<ScreenerListResponse> - The filtered list of stocks
  */
 export async function getScreenerList({
-    filters,
     params,
 }: {
-    filters?: ScreenerFilter;
     params?: ScreenerListParams;
 }): Promise<ScreenerListResponse | null> {
     const { sortType = 'DESC', sortField = 'percentchange', size = 30, offset = 0 } = params || {};
-    const body = filters || {
+
+    const body = {
         operator: 'and',
         operands: [
             { operator: 'or', operands: [{ operator: 'EQ', operands: ['region', 'us'] }] },
@@ -179,32 +178,43 @@ export async function getScreenerList({
 
     try {
         if (!process.env.RAPIDAPI_KEY) {
+            console.error('❌ Missing RAPIDAPI_KEY');
             throw new Error(
                 'RAPIDAPI_KEY environment variable is not set. Please add it to your .env file.'
             );
         }
 
-        const response = await fetch(
-            `${BASE_URL}/api/screener/list?sortType=${sortType}&sortField=${sortField}&size=${size}&quote_type=EQUITY&offset=${offset}&region=US`,
-            {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY!,
-                    'X-RapidAPI-Host': process.env.RAPIDAPI_HOST!,
-                },
-                body: JSON.stringify(body),
-            }
-        );
+        const url = `${BASE_URL}/api/screener/list?sortType=${sortType}&sortField=${sortField}&size=${size}&quote_type=EQUITY&offset=${offset}&region=US`;
+
+        const requestConfig = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json; charset=utf-8',
+                accept: '*/*',
+                'accept-language': 'en-US,en;q=0.9',
+                'X-RapidAPI-Key': process.env.RAPIDAPI_KEY!,
+                'X-RapidAPI-Host': process.env.RAPIDAPI_HOST!,
+            },
+            body: JSON.stringify(body),
+        };
+
+        const response = await fetch(url, requestConfig);
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Response error:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errorText,
+            });
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data: ScreenerListResponse = await response.json();
+
         return data;
     } catch (error) {
-        console.error('Error fetching screener list:', error);
-        return null;
+        console.error('❌ Error in getScreenerList:', error);
+        throw error;
     }
 }

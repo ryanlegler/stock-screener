@@ -1,26 +1,17 @@
-import { APIClient } from './api/client';
-import { ScreenerResult, ScreenerOptions } from '../types/screener';
+import { getAllScreenerResults } from './api/screener-pagination';
+import { ScreenerResult } from '../types/screener';
+import { MAX_SCREENER_LIMIT } from '../constants';
 
-export async function getScreenerData(options: ScreenerOptions = {}): Promise<ScreenerResult> {
-    const quotes = await APIClient.getQuotes({
-        symbols: ['AAPL', 'MSFT', 'GOOGL'], // Default symbols
-        region: 'US',
-        language: 'en-US'
+export async function getScreenerData(): Promise<ScreenerResult> {
+    const result = await getAllScreenerResults({
+        sortField: 'percentchange',
+        sortType: 'DESC',
+        size: MAX_SCREENER_LIMIT,
+        delayMs: 1000, // 1 second delay between paginated requests
     });
 
-    const screenerData: ScreenerResult = {
-        results: quotes || [],
-        start: 0,
-        count: quotes?.length || 0,
-        total: quotes?.length || 0,
-        quotes: quotes || [],
-        useRecords: false
+    return {
+        ...result,
+        results: result.quotes, // Maintain compatibility with old format
     };
-
-    if (options.limit && screenerData.quotes.length > options.limit) {
-        screenerData.quotes = screenerData.quotes.slice(0, options.limit);
-        screenerData.count = screenerData.quotes.length;
-    }
-
-    return screenerData;
 }

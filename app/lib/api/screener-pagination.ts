@@ -41,41 +41,45 @@ export async function getAllScreenerResults(params: PaginatedScreenerParams): Pr
     let hasMore = true;
     const delayMs = params.delayMs || 1000; // Default to 1 second delay
 
-    while (hasMore) {
-        const response = await getScreenerList({
-            params: {
-                ...params,
-                offset,
-            },
-        });
+    try {
+        while (hasMore) {
+            const response = await getScreenerList({
+                params: {
+                    ...params,
+                    offset,
+                },
+            });
 
-        if (!response || !response.finance?.result?.[0]) {
-            hasMore = false;
-            break;
+            if (!response || !response.finance?.result?.[0]) {
+                hasMore = false;
+                break;
+            }
+
+            results.push(response);
+
+            const { count, total } = response.finance.result[0];
+            offset += count;
+
+            if (offset >= total) {
+                hasMore = false;
+            } else {
+                await delay(delayMs);
+            }
         }
 
-        results.push(response);
+        // Combine all results into a single Result object
+        const allQuotes = results.flatMap(response => response?.finance?.result?.[0]?.quotes || []);
 
-        const { count, total } = response.finance.result[0];
-        offset += count;
-
-        if (offset >= total) {
-            hasMore = false;
-        } else {
-            // Add delay before next request
-            await delay(delayMs);
-        }
+        // Now our counts reflect the actual combined data
+        return {
+            start: 0, // We're showing all results, so we start at 0
+            count: allQuotes.length, // Total number of quotes we've collected
+            total: allQuotes.length, // Since we've fetched everything, total equals count
+            quotes: allQuotes,
+            useRecords: false,
+        };
+    } catch (error) {
+        console.error('❌ Error in getAllScreenerResults:', error);
+        throw error;
     }
-
-    // Combine all results into a single Result object
-    const allQuotes = results.flatMap(response => response?.finance?.result?.[0]?.quotes || []);
-
-    // Now our counts reflect the actual combined data
-    return {
-        start: 0, // We're showing all results, so we start at 0
-        count: allQuotes.length, // Total number of quotes we've collected
-        total: allQuotes.length, // Since we've fetched everything, total equals count
-        quotes: allQuotes,
-        useRecords: false,
-    };
 }

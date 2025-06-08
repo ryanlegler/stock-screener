@@ -2,8 +2,6 @@ import {
     APIError,
     GetChartDataParams,
     ChartResponse,
-    QuotesParams,
-    QuoteItem,
 } from '@/app/types/api';
 
 interface ChartDataPoint {
@@ -26,6 +24,8 @@ const getHeaders = () => ({
     'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
     'x-rapidapi-host': process.env.RAPIDAPI_HOST!,
 });
+
+
 
 export class APIClient {
     /**
@@ -178,75 +178,12 @@ export class APIClient {
                 error: null,
             };
         } catch (error) {
-            console.error('Historical data API request failed:', error);
+            console.error('API request failed:', error);
             return {
                 symbol,
                 results: [],
                 error: error instanceof Error ? error.message : 'Unknown error',
             };
-        }
-    }
-
-    /**
-     * Fetches stock quotes for one or multiple symbols
-     *
-     * @param symbols - Single symbol or array of symbols to fetch quotes for
-     * @param fields - Data fields to include in the response. Default is 'quoteSummary'.
-     *                 Available options include: quoteSummary, regularMarketPrice, regularMarketChange,
-     *                 regularMarketChangePercent, marketCap, longName, shortName, etc.
-     *                 For a full list of fields, see the QuoteItem interface.
-     * @param language - Language for the response. Default is 'en-US'
-     * @param region - Region for the data. Default is 'US'
-     * @returns Promise with quote data for the requested symbols
-     */
-    static async getQuotes({
-        symbols,
-        fields = 'quoteSummary',
-        language = 'en-US',
-        region = 'US',
-    }: QuotesParams): Promise<QuoteItem[]> {
-        try {
-            // Convert symbols array to comma-separated string if it's an array
-            const symbolsParam = Array.isArray(symbols) ? symbols.join(',') : symbols;
-
-            const queryParams = new URLSearchParams({
-                symbols: symbolsParam,
-                fields,
-                language,
-                region,
-            });
-
-            const requestHeaders = {
-                ...getHeaders(),
-                host: process.env.RAPIDAPI_HOST!,
-                accept: '*/*',
-                'accept-language': 'en-US,en;q=0.9',
-                'accept-encoding': 'gzip, deflate, br, zstd',
-            };
-
-            const baseUrl = `https://${process.env.RAPIDAPI_HOST!}`;
-            const fullUrl = `${baseUrl}/api/market/get-quote-v2?${queryParams.toString()}`;
-
-            const response = await fetch(fullUrl, {
-                headers: requestHeaders,
-                next: {
-                    revalidate: 300, // Cache for 5 minutes
-                },
-            });
-
-            if (!response.ok) {
-                const error: APIError = {
-                    status: response.status,
-                    message: `API request failed with status ${response.status}`,
-                };
-                throw error;
-            }
-
-            const data = await response.json();
-            return data.quoteResponse?.result;
-        } catch (error) {
-            console.error('API request failed:', error);
-            throw error;
         }
     }
 }
