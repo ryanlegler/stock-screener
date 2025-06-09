@@ -1,5 +1,6 @@
 import { Report } from '@/app/types/report';
 import { filterMarketData } from './filter-market-data';
+import { MIN_EXPECTED_POINTS } from '@/app/constants';
 
 /**
  * Takes a full report and filters all historical data to only include market hours
@@ -9,7 +10,6 @@ import { filterMarketData } from './filter-market-data';
 export function filterReportData(report: Report): Report {
     // Expected number of data points for a complete dataset
     // For 1 month (approx 22 trading days) with 7 points per day
-    const EXPECTED_POINTS = 154; // 7 points per day * 22 trading days
 
     // Filter historical data to only include market hours and remove incomplete datasets
     const filteredHistoricalData = Object.fromEntries(
@@ -20,9 +20,11 @@ export function filterReportData(report: Report): Report {
                 return [symbol, filtered] as const;
             })
             .filter(([symbol, filtered]) => {
-                const hasEnoughPoints = filtered.length === EXPECTED_POINTS;
+                const hasEnoughPoints = filtered.length >= MIN_EXPECTED_POINTS;
                 if (!hasEnoughPoints) {
-                    console.log(`Filtering out ${symbol}: only has ${filtered.length} points, need ${EXPECTED_POINTS}`);
+                    console.log(
+                        `Filtering out ${symbol}: only has ${filtered.length} points, need ${EXPECTED_POINTS}`
+                    );
                 }
                 return hasEnoughPoints;
             })

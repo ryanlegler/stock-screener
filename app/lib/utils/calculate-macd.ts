@@ -5,8 +5,6 @@ import { MACDChartDataPoint } from '../../types/api';
 export function hydrateMACD(data: ChartDataPoint[]): MACDChartDataPoint[] {
     // Convert timestamps to Date objects
 
-    const totalCandles = data.length;
-    console.log('🚀 ~ hydrateMACD ~ totalCandles:', totalCandles);
     const processedData = data.map(d => ({
         ...d,
         date: new Date(d.date),

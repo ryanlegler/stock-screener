@@ -13,7 +13,6 @@ interface StockChartsProps {
 export function StockCharts({ report }: StockChartsProps) {
     // Get all symbols and their data
     const entries = Object.entries(report.data.historicalData);
-    console.log('Total stocks:', entries.length);
 
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -31,7 +30,7 @@ export function StockCharts({ report }: StockChartsProps) {
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-semibold">{symbol}</h3>
                         </div>
-                        <CandlestickChart data={limitedData} width={400} height={200} />
+                        <CandlestickChart data={limitedData} />
                         <MACDIndicator data={limitedData} />
 
                         <ul className="mt-2 space-y-1 text-sm">

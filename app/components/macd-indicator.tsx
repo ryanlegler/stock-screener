@@ -13,9 +13,6 @@ import { useMeasure } from '@uidotdev/usehooks';
 
 export function MACDIndicator({ data }: { data: ChartDataPoint[] }) {
     const [ref, { width: containerWidth, height: containerHeight }] = useMeasure();
-    console.log('🚀 ~ containerWidth:', containerWidth);
-    console.log('🚀 ~ containerHeight:', containerHeight);
-
     try {
         const scaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
         const { data: chartData, xScale, xAccessor, displayXAccessor } = scaleProvider(data);

@@ -5,14 +5,14 @@ import { CandlestickSeries } from '@react-financial-charts/series';
 import { XAxis, YAxis } from '@react-financial-charts/axes';
 import { discontinuousTimeScaleProviderBuilder } from '@react-financial-charts/scales';
 import { ChartDataPoint } from '../types/api';
+import { useMeasure } from '@uidotdev/usehooks';
 
 interface CandlestickChartProps {
     data: ChartDataPoint[];
-    width?: number;
-    height?: number;
 }
 
-export function CandlestickChart({ data, width = 800, height = 400 }: CandlestickChartProps) {
+export function CandlestickChart({ data }: CandlestickChartProps) {
+    const [ref, { width: containerWidth, height: containerHeight }] = useMeasure();
     if (!data?.length) {
         return <div>No data available</div>;
     }
@@ -30,21 +30,23 @@ export function CandlestickChart({ data, width = 800, height = 400 }: Candlestic
     const { data: scaledData, xScale, xAccessor, displayXAccessor } = scaleProvider(dataWithDates);
 
     return (
-        <ChartCanvas
-            width={width}
-            height={height}
-            ratio={1}
-            seriesName="Candlestick Chart"
-            data={scaledData}
-            xScale={xScale}
-            xAccessor={xAccessor}
-            displayXAccessor={displayXAccessor}
-        >
-            <Chart id={1} yExtents={(d: ChartDataPoint) => [d.high || 0, d.low || 0]}>
-                <CandlestickSeries />
-                <XAxis />
-                <YAxis />
-            </Chart>
-        </ChartCanvas>
+        <div ref={ref} className="h-[150px]">
+            {containerWidth && containerHeight && (
+                <ChartCanvas
+                    width={containerWidth}
+                    height={containerHeight}
+                    ratio={1}
+                    seriesName="Candlestick Chart"
+                    data={scaledData}
+                    xScale={xScale}
+                    xAccessor={xAccessor}
+                    displayXAccessor={displayXAccessor}
+                >
+                    <Chart id={1} yExtents={(d: ChartDataPoint) => [d.high || 0, d.low || 0]}>
+                        <CandlestickSeries />
+                    </Chart>
+                </ChartCanvas>
+            )}
+        </div>
     );
 }
