@@ -482,3 +482,11 @@ export interface NewsAPIHeaders {
     'x-rapidapi-host': string;
     'x-rapidapi-key': string;
 }
+
+export type MACDChartDataPoint = ChartDataPoint & {
+    macd?: {
+        macd: number;
+        signal: number;
+        histogram: number;
+    };
+};

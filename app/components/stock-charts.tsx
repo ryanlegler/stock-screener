@@ -2,6 +2,8 @@ import { StockChartWrapper } from './stock-chart-wrapper';
 import { Report } from '../types/report';
 import { MACDIndicator } from './macd-indicator';
 import { checkMACDQualification } from '../lib/indicators';
+import { hydrateMACD } from '../lib/utils/calculate-macd';
+import { getMACDAnalysis } from '../lib/technical-analysis';
 
 interface StockChartsProps {
     report: Report;
@@ -19,9 +21,11 @@ export function StockCharts({ report }: StockChartsProps) {
 
                 const isQualified = checkMACDQualification(chartData);
 
-                // how many data points for each chart
-                const dataPoints = chartData.length;
-                console.log('🚀 ~ {entries.map ~ dataPoints:', dataPoints);
+                const macdAnalysis = getMACDAnalysis(chartData);
+
+                const macdData = hydrateMACD(chartData);
+
+                const limitedData = macdData.slice(100);
 
                 return (
                     <div
@@ -31,8 +35,20 @@ export function StockCharts({ report }: StockChartsProps) {
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-semibold">{symbol}</h3>
                         </div>
-                        <StockChartWrapper data={chartData} width={400} height={200} />
-                        <MACDIndicator data={chartData} />
+                        <StockChartWrapper data={limitedData} width={400} height={200} />
+                        <MACDIndicator data={limitedData} />
+
+                        <ul className="mt-2 space-y-1 text-sm">
+                            <li>
+                                {macdAnalysis?.bullishCrossover ? '✅' : '❌'} Bullish Crossover
+                            </li>
+                            <li>{macdAnalysis?.higherLow ? '✅' : '❌'} Higher Low</li>
+                            <li>{macdAnalysis?.supportBounce ? '✅' : '❌'} Support Bounce</li>
+                            <li>
+                                {macdAnalysis?.waningBearishMomentum ? '✅' : '❌'} Waning Bearish
+                                Momentum
+                            </li>
+                        </ul>
                     </div>
                 );
             })}

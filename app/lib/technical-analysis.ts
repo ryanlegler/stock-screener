@@ -1,65 +1,50 @@
 /**
- * Server Actions for the Stock Screener
+ * Technical Analysis functions for the Stock Screener
  */
 
-'use server';
-
-import { calculateMACD, analyzeMACD } from './indicators';
-import { MACDAnalysisResult } from '../types/technical-analysis';
-import { fetchYahooFinanceChart } from './api/yahoo-finance-api';
+import { analyzeMACD } from './indicators';
+import { ChartDataPoint } from '../types/api';
+import { hydrateMACD } from './utils/calculate-macd';
 
 /**
- * Fetches historical data and calculates MACD indicators for a given symbol
+ * Analyzes MACD indicators for a given set of price data
  *
- * @param symbol - Stock symbol to analyze
- * @param interval - Time interval between data points (1d, 1wk, 1mo)
- * @param range - Time range to fetch data for (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)
- * @returns Object containing MACD data and analysis results
+ * @param chartData - Array of chart data points
+ * @returns Analysis results for MACD indicators
  */
-export async function getMACDAnalysis(
-    symbol: string,
-    interval: string,
-    range: string
-): Promise<MACDAnalysisResult | null> {
+export function getMACDAnalysis(chartData: ChartDataPoint[]) {
     try {
-        // Fetch historical data
-        const data = await fetchYahooFinanceChart({ symbol, interval, range });
-
-        // Return null for symbols with no data (they will be filtered out)
-        if (!data || !data.results || !data.results.length) {
+        if (!chartData || chartData.length === 0) {
             return null;
         }
 
-        // Calculate MACD for the historical data
-        const closePrices = data.results
-            .map(point => point.close)
-            .filter((price): price is number => typeof price === 'number' && !isNaN(price));
-
-        if (closePrices.length === 0) {
+        // Use hydrateMACD to calculate MACD values
+        const hydratedData = hydrateMACD(chartData);
+        
+        if (!hydratedData || hydratedData.length === 0) {
             return null;
         }
 
-        const macdData = calculateMACD(closePrices);
-        const analysis = analyzeMACD(macdData);
+        // Convert to the format expected by analyzeMACD
+        const macdData = hydratedData
+            .filter((d): d is ChartDataPoint & { macd: NonNullable<typeof d.macd> } => d.macd !== undefined)
+            .map(d => ({
+                date: d.date,
+                macd: d.macd.macd,
+                signal: d.macd.signal,
+                histogram: d.macd.histogram,
+                value: d.close || 0,
+                price: d.close || 0
+            }));
 
-        return {
-            symbol,
-            macdData,
-            analysis,
-            error: null
-        };
+        return analyzeMACD(macdData);
     } catch (error) {
         console.error('Error in MACD analysis:', error);
         return {
-            symbol,
-            macdData: [],
-            analysis: {
-                waningBearishMomentum: false,
-                bullishCrossover: false,
-                higherLow: false,
-                supportBounce: false
-            },
-            error: error instanceof Error ? error.message : 'Failed to analyze MACD'
+            waningBearishMomentum: false,
+            bullishCrossover: false,
+            higherLow: false,
+            supportBounce: false
         };
     }
 }

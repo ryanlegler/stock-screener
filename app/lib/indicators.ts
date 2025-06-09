@@ -113,7 +113,7 @@ export function calculateMACD(
 export function analyzeMACD(macdData: MACDResult[]) {
     return {
         waningBearishMomentum: checkWaningBearishMomentum(macdData),
-        bullishCrossover: checkBullishCrossover(macdData),
+        bullishCrossover: checkBullishCrossover(macdData, 10),
         higherLow: checkHigherLow(macdData),
         supportBounce: checkSupportBounce(macdData),
     };
@@ -136,16 +136,22 @@ function checkWaningBearishMomentum(macdData: MACDResult[]): boolean {
 
 /**
  * Checks if there is a bullish crossover (MACD line crosses above Signal line)
+ * within the last `lookback` candles (default is 2, equivalent to original behavior)
  */
-function checkBullishCrossover(macdData: MACDResult[]): boolean {
-    // Need at least 2 data points to check for a crossover
-    if (macdData.length < 2) return false;
+function checkBullishCrossover(macdData: MACDResult[], lookback: number = 2): boolean {
+    if (macdData.length < lookback) return false;
 
-    const last = macdData[macdData.length - 1];
-    const prev = macdData[macdData.length - 2];
+    const start = Math.max(0, macdData.length - lookback - 1);
+    for (let i = start; i < macdData.length - 1; i++) {
+        const prev = macdData[i];
+        const next = macdData[i + 1];
 
-    // MACD line was below signal line and is now above it
-    return prev.macd <= prev.signal && last.macd > last.signal;
+        if (prev.macd <= prev.signal && next.macd > next.signal) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
