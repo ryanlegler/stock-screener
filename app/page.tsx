@@ -1,4 +1,4 @@
-import { StockCharts } from './components/stock-charts';
+import { ReportCards } from './components/report-cards';
 import { getLatestReport } from './lib/reports';
 import { GenerateReportButton } from './components/generate-report-button';
 import { ReportStatus } from './components/report-status';
@@ -21,7 +21,7 @@ export default async function Home() {
 
             {filteredReport ? (
                 <>
-                    <StockCharts report={filteredReport} />
+                    <ReportCards report={filteredReport} />
                     <ReportsList />
                 </>
             ) : (

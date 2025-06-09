@@ -2,7 +2,7 @@
 
 import { revalidateTag } from 'next/cache';
 import { fetchRawScreenerData } from '../screener';
-import { fetchStockCharts } from '../api/fetch-stock-charts';
+import { fetchReportData } from '../api/fetch-report-data';
 import { saveReport } from '../reports/save-report';
 import { Report } from '../../types/report';
 import { MAX_TOP_SYMBOLS } from '@/app/constants';
@@ -17,7 +17,7 @@ export async function generateReport(): Promise<{ success: boolean; error?: stri
             .slice(0, MAX_TOP_SYMBOLS)
             .map(quote => quote.symbol);
 
-        const historicData = await fetchStockCharts(topSymbols);
+        const historicData = await fetchReportData(topSymbols);
 
         // Create the report
         const report: Report = {

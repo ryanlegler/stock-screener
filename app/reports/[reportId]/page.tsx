@@ -1,6 +1,6 @@
 import { getReport } from '@/app/lib/reports';
 import { filterReportData } from '@/app/lib/utils/filter-report-data';
-import { StockCharts } from '@/app/components/stock-charts';
+import { ReportCards } from '@/app/components/report-cards';
 import Link from 'next/link';
 
 interface Props {
@@ -75,7 +75,7 @@ export default async function ReportPage({ params }: Props) {
             <h1 className="text-2xl font-bold mb-8">
                 Report from {new Date(filteredReport.generatedAt).toLocaleString()}
             </h1>
-            <StockCharts report={filteredReport} />
+            <ReportCards report={filteredReport} />
         </div>
     );
 }

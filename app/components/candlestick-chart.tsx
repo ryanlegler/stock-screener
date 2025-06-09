@@ -2,16 +2,16 @@
 
 import { ChartCanvas, Chart } from '@react-financial-charts/core';
 import { CandlestickSeries } from '@react-financial-charts/series';
-import { XAxis, YAxis } from '@react-financial-charts/axes';
 import { discontinuousTimeScaleProviderBuilder } from '@react-financial-charts/scales';
 import { ChartDataPoint } from '../types/api';
 import { useMeasure } from '@uidotdev/usehooks';
 
 interface CandlestickChartProps {
     data: ChartDataPoint[];
+    chartHeight?: number;
 }
 
-export function CandlestickChart({ data }: CandlestickChartProps) {
+export function CandlestickChart({ data, chartHeight }: CandlestickChartProps) {
     const [ref, { width: containerWidth, height: containerHeight }] = useMeasure();
     if (!data?.length) {
         return <div>No data available</div>;
@@ -30,7 +30,7 @@ export function CandlestickChart({ data }: CandlestickChartProps) {
     const { data: scaledData, xScale, xAccessor, displayXAccessor } = scaleProvider(dataWithDates);
 
     return (
-        <div ref={ref} className="h-[150px]">
+        <div ref={ref} className="border border-red-500" style={{ height: chartHeight }}>
             {containerWidth && containerHeight && (
                 <ChartCanvas
                     width={containerWidth}

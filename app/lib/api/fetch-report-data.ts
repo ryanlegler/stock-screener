@@ -6,7 +6,7 @@ import { fetchYahooFinanceChart } from './yahoo-finance-api';
  * @param symbols - Array of stock symbols to fetch data for
  * @returns Promise<Record<string, ChartDataPoint[]>> Map of symbols to their historical data
  */
-export async function fetchStockCharts(
+export async function fetchReportData(
     symbols: string[],
     onProgress?: (processed: number) => void
 ): Promise<Record<string, ChartDataPoint[]>> {

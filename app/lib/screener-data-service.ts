@@ -1,4 +1,4 @@
-import { fetchStockCharts } from './api/fetch-stock-charts';
+import { fetchReportData } from './api/fetch-report-data';
 import { getLatestReport } from './reports';
 import { fetchRawScreenerData as getScreenerResults } from './screener';
 import { CombinedScreenerResult, ScreenerResult } from '../types/screener';
@@ -35,7 +35,7 @@ export async function fetchScreenerDataWithHistory(): Promise<CombinedScreenerRe
 
         // Fetch historical data for the symbols
         const symbols = limitedData.results.map(result => result.symbol);
-        const historicalData = await fetchStockCharts(symbols);
+        const historicalData = await fetchReportData(symbols);
 
         return {
             ...limitedData,

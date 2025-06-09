@@ -11,7 +11,13 @@ import { ChartDataPoint } from '../types/api';
 
 import { useMeasure } from '@uidotdev/usehooks';
 
-export function MACDIndicator({ data }: { data: ChartDataPoint[] }) {
+export function MACDIndicator({
+    data,
+    chartHeight,
+}: {
+    data: ChartDataPoint[];
+    chartHeight?: number;
+}) {
     const [ref, { width: containerWidth, height: containerHeight }] = useMeasure();
     try {
         const scaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
@@ -24,7 +30,7 @@ export function MACDIndicator({ data }: { data: ChartDataPoint[] }) {
         const xExtents = [xAccessor(chartData[0]), xAccessor(chartData[chartData.length - 1])];
 
         return (
-            <div ref={ref} className="h-[150px]">
+            <div ref={ref} style={{ height: chartHeight }} className="border border-red-500">
                 {containerHeight && containerWidth && (
                     <ChartCanvas
                         height={containerHeight}
