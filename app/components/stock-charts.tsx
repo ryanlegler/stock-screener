@@ -4,6 +4,7 @@ import { MACDIndicator } from './macd-indicator';
 import { checkMACDQualification } from '../lib/indicators';
 import { hydrateMACD } from '../lib/utils/calculate-macd';
 import { getMACDAnalysis } from '../lib/technical-analysis';
+import { MAX_CANDLES } from '../constants';
 
 interface StockChartsProps {
     report: Report;
@@ -17,15 +18,10 @@ export function StockCharts({ report }: StockChartsProps) {
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {entries.map(([symbol, chartData]) => {
-                // Check if this is the last symbol and if it qualifies
-
                 const isQualified = checkMACDQualification(chartData);
-
                 const macdAnalysis = getMACDAnalysis(chartData);
-
                 const macdData = hydrateMACD(chartData);
-
-                const limitedData = macdData.slice(100);
+                const limitedData = macdData.slice(MAX_CANDLES);
 
                 return (
                     <div
