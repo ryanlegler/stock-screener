@@ -16,7 +16,7 @@ export async function fetchStockCharts(
             const response = await fetchYahooFinanceChart({
                 symbol,
                 interval: '1h',
-                range: '7d'
+                range: '1mo',
             });
 
             if (response.error || !response.results?.length) {
