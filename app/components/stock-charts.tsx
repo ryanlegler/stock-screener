@@ -1,4 +1,4 @@
-import { StockChartWrapper } from './stock-chart-wrapper';
+import { CandlestickChart } from './candlestick-chart';
 import { Report } from '../types/report';
 import { MACDIndicator } from './macd-indicator';
 import { checkMACDQualification } from '../lib/indicators';
@@ -31,7 +31,7 @@ export function StockCharts({ report }: StockChartsProps) {
                         <div className="mb-4 flex items-center justify-between">
                             <h3 className="text-lg font-semibold">{symbol}</h3>
                         </div>
-                        <StockChartWrapper data={limitedData} width={400} height={200} />
+                        <CandlestickChart data={limitedData} width={400} height={200} />
                         <MACDIndicator data={limitedData} />
 
                         <ul className="mt-2 space-y-1 text-sm">

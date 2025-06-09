@@ -6,13 +6,13 @@ import { XAxis, YAxis } from '@react-financial-charts/axes';
 import { discontinuousTimeScaleProviderBuilder } from '@react-financial-charts/scales';
 import { ChartDataPoint } from '../types/api';
 
-interface StockChartProps {
+interface CandlestickChartProps {
     data: ChartDataPoint[];
     width?: number;
     height?: number;
 }
 
-export function StockChartWrapper({ data, width = 800, height = 400 }: StockChartProps) {
+export function CandlestickChart({ data, width = 800, height = 400 }: CandlestickChartProps) {
     if (!data?.length) {
         return <div>No data available</div>;
     }
@@ -34,7 +34,7 @@ export function StockChartWrapper({ data, width = 800, height = 400 }: StockChar
             width={width}
             height={height}
             ratio={1}
-            seriesName="Stock Chart"
+            seriesName="Candlestick Chart"
             data={scaledData}
             xScale={xScale}
             xAccessor={xAccessor}
