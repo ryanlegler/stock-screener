@@ -4,7 +4,6 @@ import { CandlestickChart } from '@/components/candlestick-chart';
 import { MACDIndicator } from '@/components/macd-indicator';
 import { getMACDAnalysis } from '@/app/lib/technical-analysis';
 import { useMeasure } from '@uidotdev/usehooks';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ReportCardProps {
     symbol: string;
@@ -19,22 +18,11 @@ export function ReportCard({ symbol, chartData, isQualified, macdAnalysis }: Rep
 
     return (
         <div ref={ref} className="rounded-lg border border-gray-700 p-4">
-            <Tabs defaultValue={isQualified ? "qualified" : "not-qualified"} className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="qualified">Qualified</TabsTrigger>
-                    <TabsTrigger value="not-qualified">Not Qualified</TabsTrigger>
-                </TabsList>
-                <TabsContent value="qualified">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">{isQualified ? '✅' : ''} {symbol}</h3>
-                    </div>
-                </TabsContent>
-                <TabsContent value="not-qualified">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">{!isQualified ? '❌' : ''} {symbol}</h3>
-                    </div>
-                </TabsContent>
-            </Tabs>
+            <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold">
+                    {isQualified ? '✅' : '❌'} {symbol}
+                </h3>
+            </div>
 
             <div className="flex flex-col gap-4">
                 <CandlestickChart data={chartData} chartHeight={chartHeight} />
