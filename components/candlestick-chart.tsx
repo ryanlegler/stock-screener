@@ -3,8 +3,8 @@
 import { ChartCanvas, Chart } from '@react-financial-charts/core';
 import { CandlestickSeries } from '@react-financial-charts/series';
 import { discontinuousTimeScaleProviderBuilder } from '@react-financial-charts/scales';
-import { ChartDataPoint } from '../types/api';
 import { useMeasure } from '@uidotdev/usehooks';
+import { ChartDataPoint } from '@/app/types/api';
 
 interface CandlestickChartProps {
     data: ChartDataPoint[];

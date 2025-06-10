@@ -1,4 +1,4 @@
-import { MACDResult } from '../lib/indicators';
+import { MACDResult } from '@/app/lib/indicators';
 
 export interface MACDAnalysisResult {
     symbol: string;

@@ -1,5 +1,5 @@
 import { ChartDataPoint } from '@/app/types/api';
-import { fetchYahooFinanceChart } from './yahoo-finance-api';
+import { fetchYahooFinanceChart } from '@/app/lib/api/yahoo-finance-api';
 
 /**
  * Fetches historical price data for multiple symbols

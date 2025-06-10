@@ -1,6 +1,6 @@
 import { macd } from 'react-financial-charts';
-import { ChartDataPoint } from '../../types/api';
-import { MACDChartDataPoint } from '../../types/api';
+import { ChartDataPoint } from '@/app/types/api';
+import { MACDChartDataPoint } from '@/app/types/api';
 
 export function hydrateMACD(data: ChartDataPoint[]): MACDChartDataPoint[] {
     // Convert timestamps to Date objects

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { deleteReport } from '../lib/api/delete-report';
+import { deleteReport } from '@/app/lib/api/delete-report';
 
 export function DeleteReportButton({ reportId }: { reportId: string }) {
     const router = useRouter();

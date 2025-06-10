@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generateReport } from '../lib/api/generate-report';
+import { generateReport } from '@/app/lib/api/generate-report';
 
 export function GenerateReportButton({ disabled }: { disabled: boolean }) {
     const [isGenerating, setIsGenerating] = useState(false);

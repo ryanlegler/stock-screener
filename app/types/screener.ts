@@ -1,4 +1,4 @@
-import { ChartDataPoint } from './api';
+import { ChartDataPoint } from '@/app/types/api';
 
 export interface ScreenerResult {
     results: ScreenerItem[];

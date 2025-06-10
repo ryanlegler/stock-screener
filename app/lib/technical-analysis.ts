@@ -2,9 +2,9 @@
  * Technical Analysis functions for the Stock Screener
  */
 
-import { analyzeMACD } from './indicators';
-import { ChartDataPoint } from '../types/api';
-import { hydrateMACD } from './utils/calculate-macd';
+import { analyzeMACD } from '@/app/lib/indicators';
+import { ChartDataPoint } from '@/app/types/api';
+import { hydrateMACD } from '@/app/lib/utils/calculate-macd';
 
 /**
  * Analyzes MACD indicators for a given set of price data

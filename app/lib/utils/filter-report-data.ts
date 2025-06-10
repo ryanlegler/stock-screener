@@ -1,5 +1,5 @@
 import { Report } from '@/app/types/report';
-import { filterMarketData } from './filter-market-data';
+import { filterMarketData } from '@/app/lib/utils/filter-market-data';
 import { EXPECTED_POINTS, MIN_EXPECTED_POINTS } from '@/app/constants';
 
 /**

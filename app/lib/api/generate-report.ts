@@ -1,10 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { fetchRawScreenerData } from '../screener';
-import { fetchReportData } from './fetch-report-data';
-import { saveReport } from './save-report';
-import { Report } from '../../types/report';
+import { fetchRawScreenerData } from '@/app/lib/screener';
+import { fetchReportData } from '@/app/lib/api/fetch-report-data';
+import { saveReport } from '@/app/lib/api/save-report';
+import { Report } from '@/app/types/report';
 import { MAX_TOP_SYMBOLS } from '@/app/constants';
 import { randomUUID } from 'crypto';
 

@@ -4,7 +4,7 @@
 flowchart TD
     %% Pages
     HomePage["Home Page (app/page.tsx)"]
-    MACDPage["MACD Page (app/components/macd-page.tsx)"]
+    MACDPage["MACD Page (components/macd-page.tsx)"]
 
     %% Server Components
     HomeImpliedVolatilityData["HomeImpliedVolatilityData (Server Component)"]

@@ -105,7 +105,7 @@ export interface ScreenerFilter {
 }
 
 // Import the ScreenerListResponse type from types.ts
-import { ScreenerListResponse } from '../../types';
+import { ScreenerListResponse } from '@/app/types';
 
 /**
  * Fetches a list of stocks matching the specified filter criteria.

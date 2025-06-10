@@ -1,4 +1,4 @@
-import { ScreenerListResponse } from '../app/types';
+import { ScreenerListResponse } from '@/app/types';
 
 export const screenerListResponse: ScreenerListResponse = {
     finance: {

@@ -6,7 +6,7 @@ import {
     discontinuousTimeScaleProvider,
     MACDSeries,
 } from 'react-financial-charts';
-import { ChartDataPoint } from '../types/api';
+import { ChartDataPoint } from '@/app/types/api';
 
 import { useMeasure } from '@uidotdev/usehooks';
 

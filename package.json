@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@libsql/client": "^0.15.9",
+        "@radix-ui/react-tabs": "^1.1.12",
         "@react-financial-charts/axes": "^2.0.0",
         "@react-financial-charts/core": "^2.0.0",
         "@react-financial-charts/scales": "^2.0.0",

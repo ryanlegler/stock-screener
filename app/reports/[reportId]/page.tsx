@@ -1,14 +1,12 @@
 import { getReport } from '@/app/lib/api/get-report';
 import { filterReportData } from '@/app/lib/utils/filter-report-data';
-import { ReportCards } from '@/app/components/report-cards';
-import { DeleteReportButton } from '@/app/components/delete-report-button';
+import { ReportCards } from '@/components/report-cards';
+import { DeleteReportButton } from '@/components/delete-report-button';
 import Link from 'next/link';
 
-interface Props {
-    params: Params;
-}
-
-type Params = Promise<{ reportId: string }>;
+type Props = {
+    params: Promise<{ reportId: string }>;
+};
 
 export default async function ReportPage({ params }: Props) {
     const { reportId } = await params;

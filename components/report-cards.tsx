@@ -1,9 +1,9 @@
-import { checkMACDQualification } from '../lib/indicators';
-import { hydrateMACD } from '../lib/utils/calculate-macd';
-import { Report } from '../types/report';
-import { ReportCard } from './report-card';
-import { getMACDAnalysis } from '../lib/technical-analysis';
-import { MAX_CANDLES } from '../constants';
+import { checkMACDQualification } from '@/app/lib/indicators';
+import { hydrateMACD } from '@/app/lib/utils/calculate-macd';
+import { Report } from '@/app/types/report';
+import { ReportCard } from '@/components/report-card';
+import { getMACDAnalysis } from '@/app/lib/technical-analysis';
+import { MAX_CANDLES } from '@/app/constants';
 
 interface ReportCardsProps {
     report: Report;
@@ -16,8 +16,8 @@ export function ReportCards({ report }: ReportCardsProps) {
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {symbols.map(([symbol, chartData]) => {
-                const isQualified = checkMACDQualification(chartData);
                 const macdAnalysis = getMACDAnalysis(chartData);
+                const isQualified = checkMACDQualification(macdAnalysis);
                 const macdData = hydrateMACD(chartData);
                 const limitedData = macdData.slice(MAX_CANDLES);
 

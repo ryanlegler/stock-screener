@@ -5,8 +5,7 @@
  * used in stock analysis, including MACD, RSI, and others.
  */
 
-import { ChartDataPoint } from '../types/api';
-import { macd } from 'react-financial-charts';
+import { getMACDAnalysis } from '@/app/lib/technical-analysis';
 
 export interface MACDResult {
     date?: Date;
@@ -203,64 +202,12 @@ function checkSupportBounce(macdData: MACDResult[]): boolean {
  * - MACD line is above signal line
  * - MACD histogram is positive and increasing
  */
-export function checkMACDQualification(chartData: ChartDataPoint[]): boolean {
-    if (chartData.length < 2) {
-        console.log('Not enough data points for MACD calculation');
-        return false;
-    }
-
-    // Convert data for MACD calculation
-    const data = chartData.map(d => ({
-        ...d,
-        date: new Date(d.date),
-    }));
-
-    // Calculate MACD
-    const macdCalculator = macd()
-        .options({
-            fast: 12,
-            slow: 26,
-            signal: 9,
-        })
-        .merge((d: any, macdData: { macd: number; signal: number; divergence: number }) => ({
-            ...d,
-            macd: macdData,
-        }))
-        .accessor((d: any) => d.macd);
-
-    const calculatedData = macdCalculator(data);
-    if (!calculatedData || calculatedData.length < 2) {
-        console.log('No MACD data calculated');
-        return false;
-    }
-
-    // Get the last two data points
-    const lastPoint = calculatedData[calculatedData.length - 1];
-    // console.log('🚀 ~ checkMACDQualification ~ lastPoint:', lastPoint);
-    const prevPoint = calculatedData[calculatedData.length - 2];
-    // console.log('🚀 ~ checkMACDQualification ~ prevPoint:', prevPoint);
-
-    if (!lastPoint.macd || !prevPoint.macd) {
-        console.log('Missing MACD data in points');
-        return false;
-    }
-
-    // Check if MACD is above signal line
-    const macdAboveSignal = lastPoint.macd.macd > lastPoint.macd.signal;
-
-    // Check if histogram is positive and increasing
-    // const currentHistogram = lastPoint.macd.divergence;
-    // const prevHistogram = prevPoint.macd.divergence;
-    // const histogramIncreasing = currentHistogram > prevHistogram && currentHistogram > 0;
-
-    // console.log('MACD Analysis:', {
-    //     symbol,
-    //     macdAboveSignal,
-    //     currentHistogram,
-    //     prevHistogram,
-    //     histogramIncreasing,
-    // });
-
-    // return macdAboveSignal && histogramIncreasing;
-    return macdAboveSignal;
+export function checkMACDQualification(macdAnalysis: ReturnType<typeof getMACDAnalysis>): boolean {
+    // if all the indicators are true, return true
+    return (
+        !!macdAnalysis?.bullishCrossover &&
+        !!macdAnalysis?.higherLow &&
+        !!macdAnalysis?.supportBounce &&
+        !!macdAnalysis?.waningBearishMomentum
+    );
 }

@@ -1,5 +1,5 @@
-import { getScreenerList } from './screener';
-import { Result, ScreenerListResponse } from '../../types';
+import { getScreenerList } from '@/app/lib/api/screener';
+import { Result, ScreenerListResponse } from '@/app/types';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

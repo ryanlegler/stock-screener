@@ -1,5 +1,5 @@
-import { ScreenerResult } from './screener';
-import { ChartDataPoint } from './api';
+import { ScreenerResult } from '@/app/types/screener';
+import { ChartDataPoint } from '@/app/types/api';
 
 export interface Report {
     id: string;

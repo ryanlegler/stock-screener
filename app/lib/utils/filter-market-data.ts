@@ -1,5 +1,5 @@
 import { ChartDataPoint } from '@/app/types/api';
-import { isWithinMarketHours } from './market-hours';
+import { isWithinMarketHours } from '@/app/lib/utils/market-hours';
 
 /**
  * Filters chart data to only include points during market hours

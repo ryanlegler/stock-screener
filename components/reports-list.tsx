@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Report } from '../types/report';
+import { Report } from '@/app/types/report';
 
 interface ReportsListProps {
     reports: Report[];

@@ -1,9 +1,9 @@
-import { GenerateReportButton } from './components/generate-report-button';
-import { ReportStatus } from './components/report-status';
-import { ReportsList } from './components/reports-list';
-import { filterReportData } from './lib/utils/filter-report-data';
-import { getReports } from './lib/api/get-reports';
-import { ReportCards } from './components/report-cards';
+import { GenerateReportButton } from '@/components/generate-report-button';
+import { ReportStatus } from '@/components/report-status';
+import { ReportsList } from '@/components/reports-list';
+import { filterReportData } from '@/app/lib/utils/filter-report-data';
+import { getReports } from '@/app/lib/api/get-reports';
+import { ReportCards } from '@/components/report-cards';
 
 export default async function Home() {
     const reports = await getReports();

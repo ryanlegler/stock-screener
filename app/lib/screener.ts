@@ -1,6 +1,6 @@
-import { getAllScreenerResults } from './api/screener-pagination';
-import { ScreenerResult } from '../types/screener';
-import { MAX_SCREENER_LIMIT } from '../constants';
+import { getAllScreenerResults } from '@/app/lib/api/screener-pagination';
+import { ScreenerResult } from '@/app/types/screener';
+import { MAX_SCREENER_LIMIT } from '@/app/constants';
 
 export async function fetchRawScreenerData(): Promise<ScreenerResult> {
     const result = await getAllScreenerResults({
