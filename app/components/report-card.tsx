@@ -17,7 +17,7 @@ export function ReportCard({ symbol, chartData, isQualified, macdAnalysis }: Rep
     const chartHeight = containerWidth ? containerWidth * 0.33 : 0;
 
     return (
-        <div ref={ref} className="rounded-lg border border-gray-300 p-4">
+        <div ref={ref} className="rounded-lg border border-gray-700 p-4">
             {isQualified ? (
                 <div className="mb-4 flex items-center justify-between">
                     <h3 className="text-lg font-semibold">✅ {symbol}</h3>
@@ -28,8 +28,10 @@ export function ReportCard({ symbol, chartData, isQualified, macdAnalysis }: Rep
                 </div>
             )}
 
-            <CandlestickChart data={chartData} chartHeight={chartHeight} />
-            <MACDIndicator data={chartData} chartHeight={chartHeight} />
+            <div className="flex flex-col gap-4">
+                <CandlestickChart data={chartData} chartHeight={chartHeight} />
+                <MACDIndicator data={chartData} chartHeight={chartHeight} />
+            </div>
 
             <ul className="mt-2 space-y-1 text-sm">
                 <li>{macdAnalysis?.bullishCrossover ? '✅' : '❌'} Bullish Crossover</li>

@@ -5,7 +5,6 @@ import {
     Chart,
     discontinuousTimeScaleProvider,
     MACDSeries,
-    CrossHairCursor,
 } from 'react-financial-charts';
 import { ChartDataPoint } from '../types/api';
 
@@ -30,12 +29,12 @@ export function MACDIndicator({
         const xExtents = [xAccessor(chartData[0]), xAccessor(chartData[chartData.length - 1])];
 
         return (
-            <div ref={ref} style={{ height: chartHeight }} className="border border-red-500">
+            <div ref={ref} style={{ height: chartHeight }} className=" ">
                 {containerHeight && containerWidth && (
                     <ChartCanvas
                         height={containerHeight}
                         width={containerWidth}
-                        ratio={3} // what does this do?
+                        ratio={1} // what does this do?
                         seriesName="Data"
                         data={chartData}
                         xScale={xScale}
@@ -62,8 +61,6 @@ export function MACDIndicator({
                                 widthRatio={0.8}
                                 yAccessor={d => d.macd}
                             />
-
-                            <CrossHairCursor />
                         </Chart>
                     </ChartCanvas>
                 )}

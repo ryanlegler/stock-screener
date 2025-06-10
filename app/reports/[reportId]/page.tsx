@@ -1,6 +1,7 @@
-import { getReport } from '@/app/lib/reports';
+import { getReport } from '@/app/lib/api/get-report';
 import { filterReportData } from '@/app/lib/utils/filter-report-data';
 import { ReportCards } from '@/app/components/report-cards';
+import { DeleteReportButton } from '@/app/components/delete-report-button';
 import Link from 'next/link';
 
 interface Props {
@@ -10,14 +11,15 @@ interface Props {
 }
 
 export default async function ReportPage({ params }: Props) {
-    const report = await getReport(params.reportId);
+    const { reportId } = params;
+    const report = await getReport(reportId);
     const filteredReport = report ? filterReportData(report) : null;
 
     if (!filteredReport) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex min-h-screen items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Report Not Found</h1>
+                    <h1 className="mb-4 text-2xl font-bold">Report Not Found</h1>
                     <p>The requested report could not be found.</p>
                 </div>
             </div>
@@ -26,11 +28,11 @@ export default async function ReportPage({ params }: Props) {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex gap-4">
+            <div className="mb-8 flex items-center justify-between">
+                <div className="flex w-full justify-between gap-4">
                     <Link
                         href="/"
-                        className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        className="inline-flex items-center rounded-lg border border-gray-600 px-4 py-2 text-gray-100 transition-colors hover:bg-gray-900 hover:text-gray-100"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +40,7 @@ export default async function ReportPage({ params }: Props) {
                             viewBox="0 0 24 24"
                             strokeWidth={1.5}
                             stroke="currentColor"
-                            className="w-5 h-5 mr-2"
+                            className="mr-2 h-5 w-5"
                         >
                             <path
                                 strokeLinecap="round"
@@ -48,31 +50,11 @@ export default async function ReportPage({ params }: Props) {
                         </svg>
                         Back
                     </Link>
-                    {params.reportId !== 'latest' && (
-                        <Link
-                            href="/reports/latest"
-                            className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5 mr-2"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                            View Latest Report
-                        </Link>
-                    )}
+
+                    <DeleteReportButton reportId={reportId} />
                 </div>
             </div>
-            <h1 className="text-2xl font-bold mb-8">
+            <h1 className="mb-8 text-2xl font-bold">
                 Report from {new Date(filteredReport.generatedAt).toLocaleString()}
             </h1>
             <ReportCards report={filteredReport} />

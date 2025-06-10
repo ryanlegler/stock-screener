@@ -153,12 +153,30 @@ The application uses the Yahoo Finance API through RapidAPI to fetch financial n
 - Use `pnpm build` to create a production build
 - Use `pnpm start` to start the production server
 
+## Database Setup
+
+This project uses Turso as the database. To set up the database:
+
+1. Install the Turso CLI and authenticate
+2. Create a new database: `turso db create stock-screener`
+3. Get your database URL: `turso db show stock-screener --url`
+4. Generate an auth token: `turso db tokens create stock-screener`
+
+### Schema Management
+
+The database schema is managed with Drizzle ORM. After making changes to the schema:
+
+1. Generate the types: `pnpm drizzle-kit generate`
+2. Push schema changes: `pnpm drizzle-kit push`
+
 ## Environment Variables
 
-| Variable      | Description                     | Required |
-| ------------- | ------------------------------- | -------- |
-| RAPIDAPI_KEY  | Your RapidAPI API key           | Yes      |
-| RAPIDAPI_HOST | RapidAPI host for Yahoo Finance | Yes      |
+| Variable            | Description                     | Required |
+| ------------------- | ------------------------------- | -------- |
+| DATABASE_URL        | Turso database URL              | Yes      |
+| DATABASE_AUTH_TOKEN | Turso database auth token       | Yes      |
+| RAPIDAPI_KEY        | Your RapidAPI API key           | Yes      |
+| RAPIDAPI_HOST       | RapidAPI host for Yahoo Finance | Yes      |
 
 ## Deployment
 

@@ -5,4 +5,4 @@ export const MAX_CANDLES = 100;
 // 7 points per day * 22 trading days
 export const EXPECTED_POINTS = 154;
 // Previous 21 days (147) + first point of current day
-export const MIN_EXPECTED_POINTS = 142;
+export const MIN_EXPECTED_POINTS = 100;

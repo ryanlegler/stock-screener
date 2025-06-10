@@ -1,28 +1,33 @@
-import { ReportCards } from './components/report-cards';
-import { getLatestReport } from './lib/reports';
 import { GenerateReportButton } from './components/generate-report-button';
 import { ReportStatus } from './components/report-status';
 import { ReportsList } from './components/reports-list';
 import { filterReportData } from './lib/utils/filter-report-data';
+import { getReports } from './lib/api/get-reports';
+import { ReportCards } from './components/report-cards';
 
 export default async function Home() {
-    const report = await getLatestReport();
-    const filteredReport = report ? filterReportData(report) : null;
+    const reports = await getReports();
+
+    const latestReport = reports[0];
+    const filteredReport = latestReport ? filterReportData(latestReport) : null;
+    const disableGenerateButton =
+        latestReport && Date.now() - new Date(latestReport.generatedAt).getTime() < 3600000;
 
     return (
         <main className="min-h-screen p-8">
             <div className="mb-8 flex items-center justify-between">
                 <div>
                     <h1 className="mb-2 text-2xl font-bold">Stock Screener</h1>
-                    {report && <ReportStatus generatedAt={report.generatedAt} />}
+                    {latestReport && <ReportStatus generatedAt={latestReport.generatedAt} />}
                 </div>
-                <GenerateReportButton />
+
+                <GenerateReportButton disabled={disableGenerateButton} />
             </div>
 
             {filteredReport ? (
                 <>
                     <ReportCards report={filteredReport} />
-                    <ReportsList />
+                    <ReportsList reports={reports} />
                 </>
             ) : (
                 <div className="py-8 text-center">

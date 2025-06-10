@@ -1,11 +1,12 @@
 'use server';
 
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { fetchRawScreenerData } from '../screener';
-import { fetchReportData } from '../api/fetch-report-data';
-import { saveReport } from '../reports/save-report';
+import { fetchReportData } from './fetch-report-data';
+import { saveReport } from './save-report';
 import { Report } from '../../types/report';
 import { MAX_TOP_SYMBOLS } from '@/app/constants';
+import { randomUUID } from 'crypto';
 
 export async function generateReport(): Promise<{ success: boolean; error?: string }> {
     try {
@@ -22,6 +23,7 @@ export async function generateReport(): Promise<{ success: boolean; error?: stri
         // Create the report
         const report: Report = {
             generatedAt: new Date().toISOString(),
+            id: randomUUID(),
             data: {
                 ...screenerData,
                 historicalData: historicData,
@@ -31,8 +33,8 @@ export async function generateReport(): Promise<{ success: boolean; error?: stri
         await saveReport(report);
 
         // Revalidate all pages that use the report data
-        revalidateTag('report');
-        revalidateTag('reports-list');
+        // lets revalidate the root page
+        revalidatePath('/');
 
         return { success: true };
     } catch (error) {

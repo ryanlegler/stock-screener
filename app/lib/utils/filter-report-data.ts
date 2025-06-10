@@ -1,6 +1,6 @@
 import { Report } from '@/app/types/report';
 import { filterMarketData } from './filter-market-data';
-import { MIN_EXPECTED_POINTS } from '@/app/constants';
+import { EXPECTED_POINTS, MIN_EXPECTED_POINTS } from '@/app/constants';
 
 /**
  * Takes a full report and filters all historical data to only include market hours
