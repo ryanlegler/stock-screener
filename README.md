@@ -19,36 +19,40 @@ The application uses a layered architecture to efficiently manage stock data and
 ### Data Flow
 
 1. **API Layer** (`/app/lib/api/`)
-   - `fetch-chart-data.ts` - Low-level function for fetching historical price data
-   - `get-historic-data.ts` - Fetches and formats historical data for multiple symbols
-   - `screener-pagination.ts` - Handles paginated screener API requests
+
+    - `fetch-chart-data.ts` - Low-level function for fetching historical price data
+    - `get-historic-data.ts` - Fetches and formats historical data for multiple symbols
+    - `screener-pagination.ts` - Handles paginated screener API requests
 
 2. **Core Business Logic** (`/app/lib/`)
-   - `screener.ts` - `fetchRawScreenerData()` gets raw screener data
-   - `server-actions.ts` - `getScreenerData()` orchestrates data flow:
-     - Manages report caching
-     - Adds historical data
-     - Limits result set
-     - Returns combined data
+
+    - `screener.ts` - `fetchRawScreenerData()` gets raw screener data
+    - `server-actions.ts` - `getScreenerData()` orchestrates data flow:
+        - Manages report caching
+        - Adds historical data
+        - Limits result set
+        - Returns combined data
 
 3. **Report System** (`/app/lib/reports/`)
-   - Reports are stored as JSON files
-   - Each report is timestamped
-   - Latest report is cached for performance
-   ```
-   ├── reports/
-   │   ├── latest.json           # Most recent report
-   │   └── report-{timestamp}.json # Archived reports
-   ```
+    - Reports are stored as JSON files
+    - Each report is timestamped
+    - Latest report is cached for performance
+    ```
+    ├── reports/
+    │   ├── latest.json           # Most recent report
+    │   └── report-{timestamp}.json # Archived reports
+    ```
 
 ### Report Generation
 
 Reports are automatically generated when:
+
 - No existing report is found
 - Current report is from a previous day
 - User manually triggers a refresh via UI
 
 ### Benefits
+
 - Clear separation of concerns between API calls and business logic
 - Efficient data caching through report system
 - Rate limiting protection via pagination

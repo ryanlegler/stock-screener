@@ -30,7 +30,7 @@ export async function fetchScreenerDataWithHistory(): Promise<CombinedScreenerRe
             ...screenerData,
             results: screenerData.results.slice(0, MAX_TOP_SYMBOLS),
             quotes: screenerData.quotes.slice(0, MAX_TOP_SYMBOLS),
-            count: Math.min(MAX_TOP_SYMBOLS, screenerData.count)
+            count: Math.min(MAX_TOP_SYMBOLS, screenerData.count),
         };
 
         // Fetch historical data for the symbols

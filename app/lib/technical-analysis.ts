@@ -20,21 +20,24 @@ export function getMACDAnalysis(chartData: ChartDataPoint[]) {
 
         // Use hydrateMACD to calculate MACD values
         const hydratedData = hydrateMACD(chartData);
-        
+
         if (!hydratedData || hydratedData.length === 0) {
             return null;
         }
 
         // Convert to the format expected by analyzeMACD
         const macdData = hydratedData
-            .filter((d): d is ChartDataPoint & { macd: NonNullable<typeof d.macd> } => d.macd !== undefined)
+            .filter(
+                (d): d is ChartDataPoint & { macd: NonNullable<typeof d.macd> } =>
+                    d.macd !== undefined
+            )
             .map(d => ({
                 date: d.date,
                 macd: d.macd.macd,
                 signal: d.macd.signal,
                 histogram: d.macd.histogram,
                 value: d.close || 0,
-                price: d.close || 0
+                price: d.close || 0,
             }));
 
         return analyzeMACD(macdData);
@@ -44,9 +47,7 @@ export function getMACDAnalysis(chartData: ChartDataPoint[]) {
             waningBearishMomentum: false,
             bullishCrossover: false,
             higherLow: false,
-            supportBounce: false
+            supportBounce: false,
         };
     }
 }
-
-

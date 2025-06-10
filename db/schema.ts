@@ -11,4 +11,3 @@ export const reports = sqliteTable('reports', {
 });
 
 export type DbReport = typeof reports.$inferSelect;
-

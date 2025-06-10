@@ -203,7 +203,7 @@ function checkSupportBounce(macdData: MACDResult[]): boolean {
  * - MACD line is above signal line
  * - MACD histogram is positive and increasing
  */
-export function checkMACDQualification(chartData: ChartDataPoint[], symbol?: string): boolean {
+export function checkMACDQualification(chartData: ChartDataPoint[]): boolean {
     if (chartData.length < 2) {
         console.log('Not enough data points for MACD calculation');
         return false;
