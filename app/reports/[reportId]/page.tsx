@@ -5,13 +5,13 @@ import { DeleteReportButton } from '@/app/components/delete-report-button';
 import Link from 'next/link';
 
 interface Props {
-    params: {
-        reportId: string;
-    };
+    params: Params;
 }
 
+type Params = Promise<{ reportId: string }>;
+
 export default async function ReportPage({ params }: Props) {
-    const { reportId } = params;
+    const { reportId } = await params;
     const report = await getReport(reportId);
     const filteredReport = report ? filterReportData(report) : null;
 

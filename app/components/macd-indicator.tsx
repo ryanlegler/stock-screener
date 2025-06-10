@@ -48,11 +48,6 @@ export function MACDIndicator({
                             yExtents={d => d.macd}
                             origin={(w, h) => [0, h - containerHeight]}
                             padding={{ top: 10, bottom: 10 }}
-                            scaleCompute={(scale, options) => {
-                                const domain = scale.domain();
-                                const buffer = Math.abs(domain[1] - domain[0]) * 0.1;
-                                return scale.domain([domain[0] - buffer, domain[1] + buffer]);
-                            }}
                         >
                             <MACDSeries
                                 clip={true}
