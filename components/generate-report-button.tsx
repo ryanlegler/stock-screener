@@ -2,8 +2,17 @@
 
 import { useState } from 'react';
 import { generateReport } from '@/app/lib/api/generate-report';
+import { cn } from '@/lib/utils';
 
-export function GenerateReportButton({ disabled }: { disabled: boolean }) {
+export function GenerateReportButton({
+    className,
+    disabled,
+    label,
+}: {
+    className?: string;
+    disabled?: boolean;
+    label?: string;
+}) {
     const [isGenerating, setIsGenerating] = useState(false);
 
     const handleGenerate = async () => {
@@ -24,9 +33,12 @@ export function GenerateReportButton({ disabled }: { disabled: boolean }) {
         <button
             onClick={handleGenerate}
             disabled={disabled || isGenerating}
-            className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-800 disabled:bg-gray-800 disabled:text-gray-500"
+            className={cn(
+                'cursor-pointer rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-800 disabled:bg-gray-800 disabled:text-gray-500',
+                className
+            )}
         >
-            {isGenerating ? 'Generating...' : 'Generate New Report'}
+            {isGenerating ? 'Generating...' : label || 'Generate New Report'}
         </button>
     );
 }

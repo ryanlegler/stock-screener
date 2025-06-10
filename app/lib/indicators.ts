@@ -204,10 +204,15 @@ function checkSupportBounce(macdData: MACDResult[]): boolean {
  */
 export function checkMACDQualification(macdAnalysis: ReturnType<typeof getMACDAnalysis>): boolean {
     // if all the indicators are true, return true
-    return (
-        !!macdAnalysis?.bullishCrossover &&
-        !!macdAnalysis?.higherLow &&
-        !!macdAnalysis?.supportBounce &&
+    // Count how many indicators are true
+    const indicators = [
+        !!macdAnalysis?.bullishCrossover,
+        !!macdAnalysis?.higherLow,
+        !!macdAnalysis?.supportBounce,
         !!macdAnalysis?.waningBearishMomentum
-    );
+    ];
+    
+    // Need at least 3 out of 4 indicators to be true
+    const trueCount = indicators.filter(Boolean).length;
+    return trueCount >= 3;
 }

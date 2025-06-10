@@ -21,7 +21,11 @@ export default async function Home() {
                     {latestReport && <ReportStatus generatedAt={latestReport.generatedAt} />}
                 </div>
 
-                <GenerateReportButton disabled={disableGenerateButton} />
+                {!disableGenerateButton ? (
+                    <GenerateReportButton />
+                ) : (
+                    <GenerateReportButton className="bg-red-900" label="Regenerate Report" />
+                )}
             </div>
 
             {filteredReport ? (
