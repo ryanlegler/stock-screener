@@ -2,7 +2,7 @@ import { ChartDataPoint } from '@/app/types/api';
 import { fetchYahooFinanceChart } from '@/app/lib/api/yahoo-finance-api';
 
 // Delay between API calls (500ms = 2 requests per second)
-const API_CALL_DELAY = 500;
+const API_CALL_DELAY = 1000;
 
 /**
  * Adds a delay between API calls to respect rate limits

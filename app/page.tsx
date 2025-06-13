@@ -4,6 +4,8 @@ import { ReportsList } from '@/components/reports-list';
 import { filterReportData } from '@/app/lib/utils/filter-report-data';
 import { getReports } from '@/app/lib/api/get-reports';
 import { ReportCards } from '@/components/report-cards';
+import { ExportReportButton } from '@/components/export-report-button';
+import { getFlaggedReport } from './lib/api/get-flagged-report';
 
 export default async function Home() {
     const reports = await getReports();
@@ -13,6 +15,14 @@ export default async function Home() {
     const disableGenerateButton =
         latestReport && Date.now() - new Date(latestReport.generatedAt).getTime() < 3600000;
 
+    const chartSymbols =
+        (filteredReport?.data?.historicalData &&
+            Object.entries(filteredReport?.data?.historicalData)?.map(([symbol]) => symbol)) ||
+        [];
+
+    const flaggedReport = await getFlaggedReport(latestReport?.id);
+    console.log('🚀 ~ ReportCard ~ flaggedReport:', flaggedReport);
+
     return (
         <main className="min-h-screen p-8">
             <div className="mb-8 flex items-center justify-between">
@@ -21,11 +31,15 @@ export default async function Home() {
                     {latestReport && <ReportStatus generatedAt={latestReport.generatedAt} />}
                 </div>
 
-                {!disableGenerateButton ? (
-                    <GenerateReportButton />
-                ) : (
-                    <GenerateReportButton className="bg-red-900" label="Regenerate Report" />
-                )}
+                <div className="flex items-center gap-2">
+                    <ExportReportButton symbols={chartSymbols} />
+
+                    {!disableGenerateButton ? (
+                        <GenerateReportButton />
+                    ) : (
+                        <GenerateReportButton className="bg-red-900" label="Regenerate Report" />
+                    )}
+                </div>
             </div>
 
             {filteredReport ? (

@@ -11,3 +11,15 @@ export const reports = sqliteTable('reports', {
 });
 
 export type DbReport = typeof reports.$inferSelect;
+
+// lets create another table that will track specific list or sumbols per report
+export const reportSymbols = sqliteTable('report_symbols', {
+    id: text('id').primaryKey(),
+    reportId: text('report_id').notNull(),
+    symbol: text('symbol').notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+        .notNull()
+        .default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type DbReportSymbol = typeof reportSymbols.$inferSelect;

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { generateReport } from '@/app/lib/api/generate-report';
 import { cn } from '@/lib/utils';
+import { MAX_TOP_SYMBOLS } from '@/app/constants';
 
 export function GenerateReportButton({
     className,
@@ -14,9 +15,23 @@ export function GenerateReportButton({
     label?: string;
 }) {
     const [isGenerating, setIsGenerating] = useState(false);
+    const [reportsLoaded, setReportsLoaded] = useState(0);
+    const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
+
+    const incrementReportsLoaded = () => {
+        const interval = setInterval(() => {
+            setReportsLoaded(prev => prev + 1);
+        }, 1000);
+        setIntervalId(interval);
+    };
 
     const handleGenerate = async () => {
+        if (intervalId) {
+            clearInterval(intervalId);
+        }
+        setReportsLoaded(0);
         setIsGenerating(true);
+        incrementReportsLoaded();
         try {
             const result = await generateReport();
             if (!result.success) {
@@ -26,6 +41,9 @@ export function GenerateReportButton({
             console.error('Error generating report:', error);
         } finally {
             setIsGenerating(false);
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
         }
     };
 
@@ -38,7 +56,15 @@ export function GenerateReportButton({
                 className
             )}
         >
-            {isGenerating ? 'Generating...' : label || 'Generate New Report'}
+            {isGenerating ? (
+                <div className="flex items-center justify-center gap-2">
+                    {' '}
+                    <span className="animate-spin">⌛</span> Fetching Data {reportsLoaded} /{' '}
+                    {MAX_TOP_SYMBOLS}
+                </div>
+            ) : (
+                label || 'Generate New Report'
+            )}
         </button>
     );
 }

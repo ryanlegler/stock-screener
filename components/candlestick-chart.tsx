@@ -42,6 +42,7 @@ export function CandlestickChart({ data, chartHeight }: CandlestickChartProps) {
                     xScale={xScale}
                     xAccessor={xAccessor}
                     displayXAccessor={displayXAccessor}
+                    disableInteraction={true} // Disable mouse interaction like scroll/zoom
                 >
                     <Chart id={1} yExtents={(d: ChartDataPoint) => [d.high || 0, d.low || 0]}>
                         <CandlestickSeries
